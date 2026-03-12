@@ -196,25 +196,36 @@ for cat in indicators:
 
 def calculate_score():
 
+    severity_multiplier = {
+        "None":0,
+        "No":0,
+        "Unknown":0,
+        "Yes":1,
+        "Mild":1,
+        "Severe":2,
+        "Very Severe":3,
+        "Knife / sharp weapon":2,
+        "Firearm":3,
+        "Other object":2,
+        "Mild threats":1,
+        "Serious threats":2,
+        "Threats of death/suicide":3,
+        "Work/financial problems":1,
+        "Legal problems":1,
+        "Both":2
+    }
+
     score = 0
 
     for q in all_indicators:
 
-        if answers[q] not in ["No","None"]:
-            score += weights[q]
+        answer = answers[q]
+
+        multiplier = severity_multiplier.get(answer,1)
+
+        score += weights[q] * multiplier
 
     return score
-
-def classify(score):
-
-    if score <= 10:
-        return "LOW RISK"
-    elif score <= 20:
-        return "MEDIUM RISK"
-    elif score <= 30:
-        return "HIGH RISK"
-    else:
-        return "EXTREME RISK"
 
 # --- ANALYSIS ---
 
@@ -266,3 +277,4 @@ if st.button("🚨 Generate Risk Assessment"):
     st.subheader("Indicator Contribution")
 
     st.dataframe(df,use_container_width=True)
+
