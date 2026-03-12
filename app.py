@@ -11,31 +11,10 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-
-body {
-background-color: #0f172a;
-}
-
-.main {
-background-color: #0f172a;
-color: white;
-}
-
-h1, h2, h3 {
-color:#e5e7eb;
-}
-
-.stButton>button {
-background-color:#dc2626;
-color:white;
-font-weight:bold;
-border-radius:6px;
-}
-
-[data-testid="stMetricValue"] {
-font-size:30px;
-}
-
+body {background-color:#0f172a;}
+.main {background-color:#0f172a;color:white;}
+h1,h2,h3 {color:#e5e7eb;}
+.stButton>button {background-color:#dc2626;color:white;font-weight:bold;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -46,96 +25,130 @@ st.title("🚔 VioGén Police Risk Assessment System")
 st.markdown("""
 Internal Police Tool — Gender Violence Risk Assessment
 
-**Procedure**
-
-1️⃣ Define **indicator weights**
-
-2️⃣ Conduct **victim interview**
-
-3️⃣ Generate **risk classification**
+1️⃣ Define indicator weights  
+2️⃣ Conduct victim interview  
+3️⃣ Generate risk classification
 """)
 
 st.divider()
 
-# --- INDICATORS ---
+# --- INDICATORS (REAL VPR5.0 STRUCTURE) ---
 
 indicators = {
 
-"History of Violence": [
+"History of Violence": {
 
-"Psychological violence (insults, humiliation)",
-"Physical violence",
-"Sexual violence",
-"Use of weapons",
-"Threats to kill the victim",
-"Aggressor jealousy",
-"Stalking behaviour",
-"Escalation of violence recently"
+"Psychological abuse (insults, humiliation)": ["None","Mild","Severe","Very Severe"],
 
+"Physical violence": ["None","Mild","Severe","Very Severe"],
+
+"Forced sexual activity": ["None","Mild","Severe","Very Severe"],
+
+"Use of weapons against victim": [
+"None","Knife / sharp weapon","Firearm","Other object"
 ],
 
-"Aggressor Characteristics": [
-
-"Extreme jealousy",
-"Harassment behaviour",
-"Economic or life problems",
-"Lack of respect for authorities",
-"Aggression against others",
-"Previous criminal record",
-"Violation of restraining orders",
-"Violence against previous partners",
-"Mental health problems",
-"Suicidal thoughts",
-"Substance abuse",
-"Family history of violence",
-"Aggressor under 24 years"
-
+"Threats or plans to harm the victim": [
+"None","Mild threats","Serious threats","Threats of death/suicide"
 ],
 
-"Victim Vulnerability": [
+"Escalation of violence in last 6 months": ["No","Yes"]
 
-"Victim disability or serious illness",
-"Victim suicidal thoughts",
-"Victim substance abuse",
-"Lack of social support",
-"Economic dependence"
+},
 
+"Aggressor Characteristics": {
+
+"Extreme jealousy or suspicions of infidelity": ["No","Yes"],
+
+"Controlling behaviour": ["No","Yes"],
+
+"Stalking or harassment behaviour": ["No","Yes"],
+
+"Aggressor experienced major stressors in last 6 months": [
+"No","Work/financial problems","Legal problems","Both"
 ],
 
-"Children Risk Factors": [
+"Property damage by aggressor in last year": ["No","Yes"],
 
-"Children with aggressor",
-"Threats or violence against children",
-"Victim fears harm to children"
+"Disrespect toward police or authorities": ["No","Yes"],
 
-],
+"Aggression toward third persons or animals": ["No","Yes"],
 
-"Aggravating Circumstances": [
+"Threats or insults toward third parties": ["No","Yes"],
 
-"Previous complaints",
-"Previous gender violence reports",
-"Victim intends to end relationship",
-"Victim believes aggressor could kill her"
+"Criminal or police record": ["No","Yes"],
 
-]
+"Previous restraining order violations": ["No","Yes"],
+
+"Previous physical or sexual assaults": ["No","Yes"],
+
+"Gender violence against previous partners": ["No","Yes"],
+
+"Mental or psychiatric disorder": ["No","Yes"],
+
+"Suicidal ideation or attempts": ["No","Yes"],
+
+"Substance abuse": ["No","Yes"],
+
+"Family history of domestic violence": ["No","Yes"],
+
+"Aggressor under 24 years old": ["No","Yes"]
+
+},
+
+"Victim Vulnerability": {
+
+"Victim has serious illness or disability": ["No","Yes"],
+
+"Victim suicidal thoughts or attempts": ["No","Yes"],
+
+"Victim substance abuse": ["No","Yes"],
+
+"Lack of social or family support": ["No","Yes"],
+
+"Foreign victim": ["No","Yes"]
+
+},
+
+"Children Related Factors": {
+
+"Victim has minor children": ["No","Yes"],
+
+"Threats against children": ["No","Yes"],
+
+"Victim fears harm to children": ["No","Yes"]
+
+},
+
+"Aggravating Circumstances": {
+
+"Victim previously reported other aggressors": ["No","Yes"],
+
+"Reciprocal or lateral violence between partners": ["No","Yes"],
+
+"Victim expressed intention to end relationship in last 6 months": ["No","Yes"],
+
+"Victim believes aggressor could seriously harm or kill her": ["No","Yes"]
 
 }
 
-all_indicators = []
-for cat in indicators:
-    all_indicators.extend(indicators[cat])
+}
 
-# --- SIDEBAR CASE FILE ---
+# --- FLATTEN INDICATORS ---
+
+all_indicators = []
+
+for cat in indicators:
+    for q in indicators[cat]:
+        all_indicators.append(q)
+
+# --- SIDEBAR ---
 
 st.sidebar.header("Case File")
 
 victim = st.sidebar.text_input("Victim ID","Case-001")
-
 officer = st.sidebar.text_input("Officer Name")
-
 location = st.sidebar.text_input("Police Unit")
-
-st.sidebar.markdown("---")
 
 st.sidebar.info("Training Simulation Mode")
 
@@ -167,19 +180,19 @@ for cat in indicators:
 
     i = 0
 
-    for q in indicators[cat]:
+    for q,options in indicators[cat].items():
 
         with cols[i % 2]:
 
             answers[q] = st.radio(
                 q,
-                ["No","Yes","Unknown"],
+                options,
                 horizontal=True
             )
 
         i += 1
 
-# --- CALCULATION ---
+# --- SCORE CALCULATION ---
 
 def calculate_score():
 
@@ -187,11 +200,10 @@ def calculate_score():
 
     for q in all_indicators:
 
-        if answers[q] == "Yes":
+        if answers[q] not in ["No","None"]:
             score += weights[q]
 
     return score
-
 
 def classify(score):
 
@@ -204,7 +216,7 @@ def classify(score):
     else:
         return "EXTREME RISK"
 
-# --- STEP 3 ANALYSIS ---
+# --- ANALYSIS ---
 
 st.header("Step 3 — Risk Analysis")
 
@@ -213,7 +225,7 @@ if st.button("🚨 Generate Risk Assessment"):
     score = calculate_score()
     risk = classify(score)
 
-    col1, col2, col3 = st.columns(3)
+    col1,col2,col3 = st.columns(3)
 
     with col1:
         st.metric("Risk Score",score)
@@ -236,20 +248,13 @@ if st.button("🚨 Generate Risk Assessment"):
     else:
         st.success("No immediate protection measures required")
 
-    # Table
-
     data = []
 
     for q in all_indicators:
 
-        val = 1 if answers[q] == "Yes" else 0
+        val = 0 if answers[q] in ["No","None"] else 1
 
-        data.append([
-            q,
-            answers[q],
-            weights[q],
-            val * weights[q]
-        ])
+        data.append([q,answers[q],weights[q],val*weights[q]])
 
     df = pd.DataFrame(data,columns=[
         "Indicator",
