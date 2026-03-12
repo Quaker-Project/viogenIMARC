@@ -32,103 +32,103 @@ Internal Police Tool — Gender Violence Risk Assessment
 
 st.divider()
 
-# --- INDICATORS (REAL VPR5.0 STRUCTURE) ---
+# --- INDICATORS (VPR5.0 STRUCTURE) ---
 
 indicators = {
 
 "History of Violence": {
 
-"Psychological abuse (insults, humiliation)": ["None","Mild","Severe","Very Severe"],
+"Psychological abuse (insults, humiliation)": ["None","Mild","Severe","Very Severe","Unknown"],
 
-"Physical violence": ["None","Mild","Severe","Very Severe"],
+"Physical violence": ["None","Mild","Severe","Very Severe","Unknown"],
 
-"Forced sexual activity": ["None","Mild","Severe","Very Severe"],
+"Forced sexual activity": ["None","Mild","Severe","Very Severe","Unknown"],
 
 "Use of weapons against victim": [
-"None","Knife / sharp weapon","Firearm","Other object"
+"None","Knife / sharp weapon","Firearm","Other object","Unknown"
 ],
 
 "Threats or plans to harm the victim": [
-"None","Mild threats","Serious threats","Threats of death/suicide"
+"None","Mild threats","Serious threats","Threats of death/suicide","Unknown"
 ],
 
-"Escalation of violence in last 6 months": ["No","Yes"]
+"Escalation of violence in last 6 months": ["No","Yes","Unknown"]
 
 },
 
 "Aggressor Characteristics": {
 
-"Extreme jealousy or suspicions of infidelity": ["No","Yes"],
+"Extreme jealousy or suspicions of infidelity": ["No","Yes","Unknown"],
 
-"Controlling behaviour": ["No","Yes"],
+"Controlling behaviour": ["No","Yes","Unknown"],
 
-"Stalking or harassment behaviour": ["No","Yes"],
+"Stalking or harassment behaviour": ["No","Yes","Unknown"],
 
 "Aggressor experienced major stressors in last 6 months": [
-"No","Work/financial problems","Legal problems","Both"
+"No","Work/financial problems","Legal problems","Both","Unknown"
 ],
 
-"Property damage by aggressor in last year": ["No","Yes"],
+"Property damage by aggressor in last year": ["No","Yes","Unknown"],
 
-"Disrespect toward police or authorities": ["No","Yes"],
+"Disrespect toward police or authorities": ["No","Yes","Unknown"],
 
-"Aggression toward third persons or animals": ["No","Yes"],
+"Aggression toward third persons or animals": ["No","Yes","Unknown"],
 
-"Threats or insults toward third parties": ["No","Yes"],
+"Threats or insults toward third parties": ["No","Yes","Unknown"],
 
-"Criminal or police record": ["No","Yes"],
+"Criminal or police record": ["No","Yes","Unknown"],
 
-"Previous restraining order violations": ["No","Yes"],
+"Previous restraining order violations": ["No","Yes","Unknown"],
 
-"Previous physical or sexual assaults": ["No","Yes"],
+"Previous physical or sexual assaults": ["No","Yes","Unknown"],
 
-"Gender violence against previous partners": ["No","Yes"],
+"Gender violence against previous partners": ["No","Yes","Unknown"],
 
-"Mental or psychiatric disorder": ["No","Yes"],
+"Mental or psychiatric disorder": ["No","Yes","Unknown"],
 
-"Suicidal ideation or attempts": ["No","Yes"],
+"Suicidal ideation or attempts": ["No","Yes","Unknown"],
 
-"Substance abuse": ["No","Yes"],
+"Substance abuse": ["No","Yes","Unknown"],
 
-"Family history of domestic violence": ["No","Yes"],
+"Family history of domestic violence": ["No","Yes","Unknown"],
 
-"Aggressor under 24 years old": ["No","Yes"]
+"Aggressor under 24 years old": ["No","Yes","Unknown"]
 
 },
 
 "Victim Vulnerability": {
 
-"Victim has serious illness or disability": ["No","Yes"],
+"Victim has serious illness or disability": ["No","Yes","Unknown"],
 
-"Victim suicidal thoughts or attempts": ["No","Yes"],
+"Victim suicidal thoughts or attempts": ["No","Yes","Unknown"],
 
-"Victim substance abuse": ["No","Yes"],
+"Victim substance abuse": ["No","Yes","Unknown"],
 
-"Lack of social or family support": ["No","Yes"],
+"Lack of social or family support": ["No","Yes","Unknown"],
 
-"Foreign victim": ["No","Yes"]
+"Foreign victim": ["No","Yes","Unknown"]
 
 },
 
 "Children Related Factors": {
 
-"Victim has minor children": ["No","Yes"],
+"Victim has minor children": ["No","Yes","Unknown"],
 
-"Threats against children": ["No","Yes"],
+"Threats against children": ["No","Yes","Unknown"],
 
-"Victim fears harm to children": ["No","Yes"]
+"Victim fears harm to children": ["No","Yes","Unknown"]
 
 },
 
 "Aggravating Circumstances": {
 
-"Victim previously reported other aggressors": ["No","Yes"],
+"Victim previously reported other aggressors": ["No","Yes","Unknown"],
 
-"Reciprocal or lateral violence between partners": ["No","Yes"],
+"Reciprocal or lateral violence between partners": ["No","Yes","Unknown"],
 
-"Victim expressed intention to end relationship in last 6 months": ["No","Yes"],
+"Victim expressed intention to end relationship in last 6 months": ["No","Yes","Unknown"],
 
-"Victim believes aggressor could seriously harm or kill her": ["No","Yes"]
+"Victim believes aggressor could seriously harm or kill her": ["No","Yes","Unknown"]
 
 }
 
@@ -197,22 +197,29 @@ for cat in indicators:
 def calculate_score():
 
     severity_multiplier = {
-        "None":0,
-        "No":0,
-        "Unknown":0,
-        "Yes":1,
-        "Mild":1,
-        "Severe":2,
-        "Very Severe":3,
-        "Knife / sharp weapon":2,
-        "Firearm":3,
-        "Other object":2,
-        "Mild threats":1,
-        "Serious threats":2,
-        "Threats of death/suicide":3,
-        "Work/financial problems":1,
-        "Legal problems":1,
-        "Both":2
+
+    "None":0,
+    "No":0,
+    "Unknown":0,
+
+    "Yes":1,
+
+    "Mild":1,
+    "Severe":2,
+    "Very Severe":3,
+
+    "Knife / sharp weapon":2,
+    "Firearm":3,
+    "Other object":2,
+
+    "Mild threats":1,
+    "Serious threats":2,
+    "Threats of death/suicide":3,
+
+    "Work/financial problems":1,
+    "Legal problems":1,
+    "Both":2
+
     }
 
     score = 0
@@ -221,11 +228,22 @@ def calculate_score():
 
         answer = answers[q]
 
-        multiplier = severity_multiplier.get(answer,1)
+        multiplier = severity_multiplier.get(answer,0)
 
         score += weights[q] * multiplier
 
     return score
+
+def classify(score):
+
+    if score <= 10:
+        return "LOW RISK"
+    elif score <= 20:
+        return "MEDIUM RISK"
+    elif score <= 30:
+        return "HIGH RISK"
+    else:
+        return "EXTREME RISK"
 
 # --- ANALYSIS ---
 
@@ -261,11 +279,28 @@ if st.button("🚨 Generate Risk Assessment"):
 
     data = []
 
+    severity_multiplier = {
+        "None":0,"No":0,"Unknown":0,
+        "Yes":1,
+        "Mild":1,"Severe":2,"Very Severe":3,
+        "Knife / sharp weapon":2,"Firearm":3,"Other object":2,
+        "Mild threats":1,"Serious threats":2,"Threats of death/suicide":3,
+        "Work/financial problems":1,"Legal problems":1,"Both":2
+    }
+
     for q in all_indicators:
 
-        val = 0 if answers[q] in ["No","None"] else 1
+        answer = answers[q]
+        multiplier = severity_multiplier.get(answer,0)
 
-        data.append([q,answers[q],weights[q],val*weights[q]])
+        contribution = weights[q] * multiplier
+
+        data.append([
+            q,
+            answer,
+            weights[q],
+            contribution
+        ])
 
     df = pd.DataFrame(data,columns=[
         "Indicator",
@@ -277,4 +312,3 @@ if st.button("🚨 Generate Risk Assessment"):
     st.subheader("Indicator Contribution")
 
     st.dataframe(df,use_container_width=True)
-
