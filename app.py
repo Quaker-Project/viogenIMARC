@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import requests
 from datetime import datetime
 
 st.set_page_config(
@@ -32,6 +33,16 @@ Internal Police Tool — Gender Violence Risk Assessment
 """)
 
 st.divider()
+
+# --- SIDEBAR (PLACED EARLY TO AVOID ERRORS) ---
+
+st.sidebar.header("Case File")
+
+victim = st.sidebar.text_input("Victim ID","Case-001")
+officer = st.sidebar.text_input("Officer Name")
+location = st.sidebar.text_input("Police Unit")
+
+st.sidebar.info("Training Simulation Mode")
 
 # --- POLICE DATABASE LOOKUP ---
 
@@ -88,12 +99,9 @@ if st.button("Search Police Records"):
         st.write("**Notes:**", record["Notes"])
 
     else:
-
         st.warning("No police records found for this individual")
 
 st.divider()
-
-# --- INTER-AGENCY INFORMATION REQUESTS ---
 
 # --- INTER-AGENCY INFORMATION REQUESTS ---
 
@@ -118,25 +126,27 @@ if st.button("Send Information Request"):
 
     else:
 
-        import requests
-
-        formspree_url = "https://formspree.io/f/xgonleql"  # <-- replace with endpoint
+        formspree_url = "https://formspree.io/f/xgonleql"
 
         data = {
             "team_email": team_email,
             "institution": institution,
             "victim_case": victim,
-            "officer": officer
+            "officer": officer,
+            "location": location,
+            "timestamp": datetime.now().isoformat()
         }
 
         try:
             requests.post(formspree_url, data=data)
 
-            st.success("Request sent to the institution.")
+            st.success("Request sent successfully")
             st.info("Await response from the institution.")
 
         except:
-            st.error("Request could not be sent.")
+            st.error("Error sending request")
+
+st.divider()
 
 # --- INDICATORS ---
 
@@ -222,16 +232,6 @@ all_indicators = []
 for cat in indicators:
     for q in indicators[cat]:
         all_indicators.append(q)
-
-# --- SIDEBAR ---
-
-st.sidebar.header("Case File")
-
-victim = st.sidebar.text_input("Victim ID","Case-001")
-officer = st.sidebar.text_input("Officer Name")
-location = st.sidebar.text_input("Police Unit")
-
-st.sidebar.info("Training Simulation Mode")
 
 # --- STEP 1 WEIGHTS ---
 
