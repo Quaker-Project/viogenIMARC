@@ -32,16 +32,74 @@ Internal Police Tool — Gender Violence Risk Assessment
 
 st.divider()
 
-# --- INDICATORS (VPR5.0 STRUCTURE) ---
+# --- POLICE DATABASE LOOKUP ---
+
+st.header("Police Intelligence Database")
+
+aggressor_name = st.text_input("Search aggressor name")
+
+police_database = {
+
+"Juan Martinez": {
+"Criminal record": "Yes",
+"Substance abuse": "Alcohol abuse",
+"Previous restraining order": "Yes",
+"Violence against others": "Yes",
+"Notes": "Previous arrest for assault (2019)"
+},
+
+"David Lopez": {
+"Criminal record": "No",
+"Substance abuse": "No known issues",
+"Previous restraining order": "No",
+"Violence against others": "No",
+"Notes": "No police incidents recorded"
+},
+
+"Ahmed Hassan": {
+"Criminal record": "Yes",
+"Substance abuse": "Drug use suspected",
+"Previous restraining order": "Unknown",
+"Violence against others": "Yes",
+"Notes": "Police intervention for street fight (2022)"
+}
+
+}
+
+if st.button("Search Police Records"):
+
+    if aggressor_name in police_database:
+
+        record = police_database[aggressor_name]
+
+        st.success("Record found")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.write("**Criminal record:**", record["Criminal record"])
+            st.write("**Substance abuse:**", record["Substance abuse"])
+
+        with col2:
+            st.write("**Previous restraining order:**", record["Previous restraining order"])
+            st.write("**Violence against others:**", record["Violence against others"])
+
+        st.write("**Notes:**", record["Notes"])
+
+    else:
+
+        st.warning("No police records found for this individual")
+
+st.divider()
+
+# --- INDICATORS ---
 
 indicators = {
 
 "History of Violence": {
 
 "Psychological abuse (insults, humiliation)": ["None","Mild","Severe","Very Severe","Unknown"],
-
 "Physical violence": ["None","Mild","Severe","Very Severe","Unknown"],
-
 "Forced sexual activity": ["None","Mild","Severe","Very Severe","Unknown"],
 
 "Use of weapons against victim": [
@@ -59,9 +117,7 @@ indicators = {
 "Aggressor Characteristics": {
 
 "Extreme jealousy or suspicions of infidelity": ["No","Yes","Unknown"],
-
 "Controlling behaviour": ["No","Yes","Unknown"],
-
 "Stalking or harassment behaviour": ["No","Yes","Unknown"],
 
 "Aggressor experienced major stressors in last 6 months": [
@@ -69,29 +125,17 @@ indicators = {
 ],
 
 "Property damage by aggressor in last year": ["No","Yes","Unknown"],
-
 "Disrespect toward police or authorities": ["No","Yes","Unknown"],
-
 "Aggression toward third persons or animals": ["No","Yes","Unknown"],
-
 "Threats or insults toward third parties": ["No","Yes","Unknown"],
-
 "Criminal or police record": ["No","Yes","Unknown"],
-
 "Previous restraining order violations": ["No","Yes","Unknown"],
-
 "Previous physical or sexual assaults": ["No","Yes","Unknown"],
-
 "Gender violence against previous partners": ["No","Yes","Unknown"],
-
 "Mental or psychiatric disorder": ["No","Yes","Unknown"],
-
 "Suicidal ideation or attempts": ["No","Yes","Unknown"],
-
 "Substance abuse": ["No","Yes","Unknown"],
-
 "Family history of domestic violence": ["No","Yes","Unknown"],
-
 "Aggressor under 24 years old": ["No","Yes","Unknown"]
 
 },
@@ -99,13 +143,9 @@ indicators = {
 "Victim Vulnerability": {
 
 "Victim has serious illness or disability": ["No","Yes","Unknown"],
-
 "Victim suicidal thoughts or attempts": ["No","Yes","Unknown"],
-
 "Victim substance abuse": ["No","Yes","Unknown"],
-
 "Lack of social or family support": ["No","Yes","Unknown"],
-
 "Foreign victim": ["No","Yes","Unknown"]
 
 },
@@ -113,9 +153,7 @@ indicators = {
 "Children Related Factors": {
 
 "Victim has minor children": ["No","Yes","Unknown"],
-
 "Threats against children": ["No","Yes","Unknown"],
-
 "Victim fears harm to children": ["No","Yes","Unknown"]
 
 },
@@ -123,11 +161,8 @@ indicators = {
 "Aggravating Circumstances": {
 
 "Victim previously reported other aggressors": ["No","Yes","Unknown"],
-
 "Reciprocal or lateral violence between partners": ["No","Yes","Unknown"],
-
 "Victim expressed intention to end relationship in last 6 months": ["No","Yes","Unknown"],
-
 "Victim believes aggressor could seriously harm or kill her": ["No","Yes","Unknown"]
 
 }
@@ -233,6 +268,7 @@ def calculate_score():
         score += weights[q] * multiplier
 
     return score
+
 
 def classify(score):
 
