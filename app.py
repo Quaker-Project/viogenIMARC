@@ -36,7 +36,7 @@ st.divider()
 
 st.header("Police Intelligence Database")
 
-aggressor_name = st.text_input("Search aggressor name")
+aggressor_name = st.text_input("Search aggressor's name")
 
 police_database = {
 
