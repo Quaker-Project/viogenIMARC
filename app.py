@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from datetime import datetime
 
 st.set_page_config(
     page_title="VioGén Police Risk System",
@@ -52,7 +53,7 @@ police_database = {
 "Criminal record": "No",
 "Substance abuse": "No known issues",
 "Previous restraining order": "No",
-"Violence against others": "Yes",
+"Violence against others": "No",
 "Notes": "No police incidents recorded"
 },
 
@@ -89,6 +90,43 @@ if st.button("Search Police Records"):
     else:
 
         st.warning("No police records found for this individual")
+
+st.divider()
+
+# --- INTER-AGENCY INFORMATION REQUESTS ---
+
+st.header("Inter-Agency Information Requests")
+
+team_email = st.text_input("Police team email")
+
+institution = st.selectbox(
+"Request information from:",
+[
+"Social Services",
+"Medical Services",
+"Police Intelligence Unit",
+"School Administration"
+]
+)
+
+if st.button("Send Information Request"):
+
+    if team_email == "":
+        st.warning("Please enter a team email")
+
+    else:
+
+        request_time = datetime.now().strftime("%H:%M:%S")
+
+        st.success("Request sent successfully")
+
+        st.write("**Request details:**")
+
+        st.write("Team email:", team_email)
+        st.write("Institution:", institution)
+        st.write("Time:", request_time)
+
+        st.info("Await response from the institution.")
 
 st.divider()
 
@@ -236,21 +274,16 @@ def calculate_score():
     "None":0,
     "No":0,
     "Unknown":0,
-
     "Yes":1,
-
     "Mild":1,
     "Severe":2,
     "Very Severe":3,
-
     "Knife / sharp weapon":2,
     "Firearm":3,
     "Other object":2,
-
     "Mild threats":1,
     "Serious threats":2,
     "Threats of death/suicide":3,
-
     "Work/financial problems":1,
     "Legal problems":1,
     "Both":2
@@ -262,7 +295,6 @@ def calculate_score():
     for q in all_indicators:
 
         answer = answers[q]
-
         multiplier = severity_multiplier.get(answer,0)
 
         score += weights[q] * multiplier
