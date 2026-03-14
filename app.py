@@ -95,6 +95,8 @@ st.divider()
 
 # --- INTER-AGENCY INFORMATION REQUESTS ---
 
+# --- INTER-AGENCY INFORMATION REQUESTS ---
+
 st.header("Inter-Agency Information Requests")
 
 team_email = st.text_input("Police team email")
@@ -116,19 +118,25 @@ if st.button("Send Information Request"):
 
     else:
 
-        request_time = datetime.now().strftime("%H:%M:%S")
+        import requests
 
-        st.success("Request sent successfully")
+        formspree_url = "https://formspree.io/f/xgonleql"  # <-- replace with endpoint
 
-        st.write("**Request details:**")
+        data = {
+            "team_email": team_email,
+            "institution": institution,
+            "victim_case": victim,
+            "officer": officer
+        }
 
-        st.write("Team email:", team_email)
-        st.write("Institution:", institution)
-        st.write("Time:", request_time)
+        try:
+            requests.post(formspree_url, data=data)
 
-        st.info("Await response from the institution.")
+            st.success("Request sent to the institution.")
+            st.info("Await response from the institution.")
 
-st.divider()
+        except:
+            st.error("Request could not be sent.")
 
 # --- INDICATORS ---
 
