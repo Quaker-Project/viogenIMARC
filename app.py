@@ -52,7 +52,7 @@ police_database = {
 "Criminal record": "No",
 "Substance abuse": "No known issues",
 "Previous restraining order": "No",
-"Violence against others": "No",
+"Violence against others": "Yes",
 "Notes": "No police incidents recorded"
 },
 
