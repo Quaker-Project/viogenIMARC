@@ -39,6 +39,26 @@ if "audio4" not in st.session_state:
     st.session_state.audio4 = False
 
 
+# --- CASE AUDIO CONFIGURATION (NEW) ---
+
+case_audios = {
+
+"Case-001": {
+"neighborA": "case1_vecinoA.mp3",
+"neighborB": "case1_vecinaB.mp3",
+"friend": "case1_amigo.mp3",
+"doctor": "case1_medico.mp3"
+},
+
+"Case-002": {
+"neighborA": "case2_vecinoA.mp3",
+"neighborB": "case2_vecinaB.mp3",
+"friend": "case2_amigo.mp3",
+"doctor": "case2_medico.mp3"
+}
+
+}
+
 # --- HEADER ---
 
 st.title("🚔 VioGén Police Risk Assessment System")
@@ -62,6 +82,13 @@ officer = st.sidebar.text_input("Officer Name")
 location = st.sidebar.text_input("Police Unit")
 
 st.sidebar.info("Training Simulation Mode")
+
+# --- SELECT CASE AUDIO (NEW) ---
+
+if victim in case_audios:
+    selected_case = case_audios[victim]
+else:
+    selected_case = case_audios["Case-001"]
 
 # --- POLICE DATABASE ---
 
@@ -276,8 +303,6 @@ if st.button("🚨 Generate Risk Assessment"):
     with col3:
         st.metric("Case ID",victim)
 
-    # --- POLICE RESPONSE MESSAGE ---
-
     if risk == "EXTREME RISK":
         st.error("⚠ Immediate protection measures required")
 
@@ -343,16 +368,16 @@ else:
             st.session_state.audio4=True
 
     if st.session_state.audio1:
-        st.audio("VECINO A.mp3")
+        st.audio(selected_case["neighborA"])
 
     if st.session_state.audio2:
-        st.audio("Amigo de la familia.mp3")
+        st.audio(selected_case["friend"])
 
     if st.session_state.audio3:
-        st.audio("VECINA B.mp3")
+        st.audio(selected_case["neighborB"])
 
     if st.session_state.audio4:
-        st.audio("MEDICO.mp3")
+        st.audio(selected_case["doctor"])
 
 st.divider()
 
