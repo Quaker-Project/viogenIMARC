@@ -74,15 +74,15 @@ database = {
 "Juan Martinez":{
 "Criminal record":"Yes",
 "Substance abuse":"Alcohol abuse",
-"Restraining order":"Yes",
+"Restraining order":"No",
 "Violence against others":"Yes"
 },
 
 "David Lopez":{
 "Criminal record":"No",
-"Substance abuse":"None",
+"Substance abuse":"Unknown",
 "Restraining order":"No",
-"Violence against others":"No"
+"Violence against others":"a slight suspicion"
 },
 
 "Ahmed Hassan":{
