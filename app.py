@@ -110,22 +110,17 @@ if st.button("Search Police Records"):
 
 st.divider()
 
-# --- INDICATORS (REAL STRUCTURE) ---
+# --- INDICATORS ---
 
 indicators = {
 
 "History of Violence":{
 
 "Psychological abuse (insults, humiliation)":["None","Mild","Severe","Very Severe","Unknown"],
-
 "Physical violence":["None","Mild","Severe","Very Severe","Unknown"],
-
 "Forced sexual activity":["None","Mild","Severe","Very Severe","Unknown"],
-
 "Use of weapons against victim":["None","Knife / sharp weapon","Firearm","Other object","Unknown"],
-
 "Threats or plans to harm victim":["None","Mild threats","Serious threats","Threats of death/suicide","Unknown"],
-
 "Escalation of violence last 6 months":["No","Yes","Unknown"]
 
 },
@@ -133,37 +128,21 @@ indicators = {
 "Aggressor Characteristics":{
 
 "Extreme jealousy":["No","Yes","Unknown"],
-
 "Controlling behaviour":["No","Yes","Unknown"],
-
 "Stalking behaviour":["No","Yes","Unknown"],
-
 "Major stressors last 6 months":["No","Work problems","Legal problems","Both","Unknown"],
-
 "Property damage last year":["No","Yes","Unknown"],
-
 "Disrespect toward authorities":["No","Yes","Unknown"],
-
 "Aggression against others":["No","Yes","Unknown"],
-
 "Threats against others":["No","Yes","Unknown"],
-
 "Criminal record":["No","Yes","Unknown"],
-
 "Restraining order violations":["No","Yes","Unknown"],
-
 "Previous assaults":["No","Yes","Unknown"],
-
 "Violence against previous partners":["No","Yes","Unknown"],
-
 "Mental disorder":["No","Yes","Unknown"],
-
 "Suicidal behaviour":["No","Yes","Unknown"],
-
 "Substance abuse":["No","Yes","Unknown"],
-
 "Family violence history":["No","Yes","Unknown"],
-
 "Aggressor under 24":["No","Yes","Unknown"]
 
 },
@@ -171,13 +150,9 @@ indicators = {
 "Victim Vulnerability":{
 
 "Victim illness or disability":["No","Yes","Unknown"],
-
 "Victim suicidal thoughts":["No","Yes","Unknown"],
-
 "Victim substance abuse":["No","Yes","Unknown"],
-
 "Lack of social support":["No","Yes","Unknown"],
-
 "Foreign victim":["No","Yes","Unknown"]
 
 },
@@ -185,9 +160,7 @@ indicators = {
 "Children Related Factors":{
 
 "Minor children":["No","Yes","Unknown"],
-
 "Threats against children":["No","Yes","Unknown"],
-
 "Victim fears harm to children":["No","Yes","Unknown"]
 
 },
@@ -195,11 +168,8 @@ indicators = {
 "Aggravating Circumstances":{
 
 "Previous reports":["No","Yes","Unknown"],
-
 "Reciprocal violence":["No","Yes","Unknown"],
-
 "Victim planning separation":["No","Yes","Unknown"],
-
 "Victim fears homicide":["No","Yes","Unknown"]
 
 }
@@ -255,19 +225,12 @@ for cat in indicators:
 def calculate_score():
 
     severity={
-
 "None":0,"No":0,"Unknown":0,
-
 "Yes":1,
-
 "Mild":1,"Severe":2,"Very Severe":3,
-
 "Knife / sharp weapon":2,"Firearm":3,"Other object":2,
-
 "Mild threats":1,"Serious threats":2,"Threats of death/suicide":3,
-
 "Work problems":1,"Legal problems":1,"Both":2
-
 }
 
     score=0
@@ -275,7 +238,6 @@ def calculate_score():
     for q in all_indicators:
 
         multiplier=severity.get(answers[q],0)
-
         score+=weights[q]*multiplier
 
     return score
@@ -303,20 +265,6 @@ if st.button("🚨 Generate Risk Assessment"):
     score=calculate_score()
     risk=classify(score)
 
-    # --- POLICE RESPONSE RECOMMENDATION ---
-
-if risk == "EXTREME RISK":
-    st.error("⚠ Immediate protection measures required")
-
-elif risk == "HIGH RISK":
-    st.warning("⚠ High monitoring recommended")
-
-elif risk == "MEDIUM RISK":
-    st.info("Monitor situation and reassess regularly")
-
-else:
-    st.success("No immediate protection measures required")
-
     col1,col2,col3=st.columns(3)
 
     with col1:
@@ -327,6 +275,20 @@ else:
 
     with col3:
         st.metric("Case ID",victim)
+
+    # --- POLICE RESPONSE MESSAGE ---
+
+    if risk == "EXTREME RISK":
+        st.error("⚠ Immediate protection measures required")
+
+    elif risk == "HIGH RISK":
+        st.warning("⚠ High monitoring recommended")
+
+    elif risk == "MEDIUM RISK":
+        st.info("Monitor situation and reassess regularly")
+
+    else:
+        st.success("No immediate protection measures required")
 
     data=[]
 
