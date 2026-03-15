@@ -322,24 +322,24 @@ else:
 
         if st.button("Request Neighbor A"):
             with st.spinner("Contacting witness..."):
-                time.sleep(3)
+                time.sleep(15)
             st.session_state.audio1=True
 
         if st.button("Request Friend"):
             with st.spinner("Contacting witness..."):
-                time.sleep(3)
+                time.sleep(25)
             st.session_state.audio2=True
 
     with col2:
 
         if st.button("Request Neighbor B"):
             with st.spinner("Contacting witness..."):
-                time.sleep(3)
+                time.sleep(30)
             st.session_state.audio3=True
 
         if st.button("Request Doctor"):
             with st.spinner("Requesting medical record..."):
-                time.sleep(4)
+                time.sleep(10)
             st.session_state.audio4=True
 
     if st.session_state.audio1:
