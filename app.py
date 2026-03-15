@@ -34,7 +34,7 @@ Internal Police Tool — Gender Violence Risk Assessment
 
 st.divider()
 
-# --- SIDEBAR (PLACED EARLY TO AVOID ERRORS) ---
+# --- SIDEBAR ---
 
 st.sidebar.header("Case File")
 
@@ -100,6 +100,33 @@ if st.button("Search Police Records"):
 
     else:
         st.warning("No police records found for this individual")
+
+st.divider()
+
+# --- WITNESS TESTIMONIES ---
+
+st.header("Witness Testimonies")
+
+st.write("Officers may listen to witness statements collected during the investigation.")
+
+col1, col2 = st.columns(2)
+
+with col1:
+
+    if st.button("Neighbor Testimony A"):
+        st.audio("VECINO A.mp3")
+
+    if st.button("Friend of family"):
+        st.audio("amigo de la familia.mp3")
+
+
+with col2:
+
+    if st.button("Neighbor Testimony B"):
+        st.audio("VECINO B.mp3")
+
+    if st.button("Emergency Doctor"):
+        st.audio("MEDICO.mp3")
 
 st.divider()
 
