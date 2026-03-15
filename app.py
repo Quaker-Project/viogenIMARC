@@ -303,6 +303,20 @@ if st.button("🚨 Generate Risk Assessment"):
     score=calculate_score()
     risk=classify(score)
 
+    # --- POLICE RESPONSE RECOMMENDATION ---
+
+if risk == "EXTREME RISK":
+    st.error("⚠ Immediate protection measures required")
+
+elif risk == "HIGH RISK":
+    st.warning("⚠ High monitoring recommended")
+
+elif risk == "MEDIUM RISK":
+    st.info("Monitor situation and reassess regularly")
+
+else:
+    st.success("No immediate protection measures required")
+
     col1,col2,col3=st.columns(3)
 
     with col1:
