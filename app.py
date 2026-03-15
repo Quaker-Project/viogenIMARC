@@ -21,6 +21,24 @@ h1,h2,h3 {color:#e5e7eb;}
 </style>
 """, unsafe_allow_html=True)
 
+# --- SESSION STATE ---
+
+if "interview_done" not in st.session_state:
+    st.session_state.interview_done = False
+
+if "audio1" not in st.session_state:
+    st.session_state.audio1 = False
+
+if "audio2" not in st.session_state:
+    st.session_state.audio2 = False
+
+if "audio3" not in st.session_state:
+    st.session_state.audio3 = False
+
+if "audio4" not in st.session_state:
+    st.session_state.audio4 = False
+
+
 # --- HEADER ---
 
 st.title("🚔 VioGén Police Risk Assessment System")
@@ -35,23 +53,6 @@ Internal Police Tool — Gender Violence Risk Assessment
 
 st.divider()
 
-# --- SESSION STATE ---
-
-if "interview_completed" not in st.session_state:
-    st.session_state.interview_completed = False
-
-if "vecinoA" not in st.session_state:
-    st.session_state.vecinoA = False
-
-if "vecinaB" not in st.session_state:
-    st.session_state.vecinaB = False
-
-if "amigo" not in st.session_state:
-    st.session_state.amigo = False
-
-if "medico" not in st.session_state:
-    st.session_state.medico = False
-
 # --- SIDEBAR ---
 
 st.sidebar.header("Case File")
@@ -62,233 +63,162 @@ location = st.sidebar.text_input("Police Unit")
 
 st.sidebar.info("Training Simulation Mode")
 
-# --- POLICE DATABASE LOOKUP ---
+# --- POLICE DATABASE ---
 
 st.header("Police Intelligence Database")
 
-aggressor_name = st.text_input("Search aggressor's name")
+aggressor_name = st.text_input("Search aggressor name")
 
-police_database = {
+database = {
 
-"Juan Martinez": {
-"Criminal record": "Yes",
-"Substance abuse": "Alcohol abuse",
-"Previous restraining order": "Yes",
-"Violence against others": "Yes",
-"Notes": "Previous arrest for assault (2019)"
+"Juan Martinez":{
+"Criminal record":"Yes",
+"Substance abuse":"Alcohol abuse",
+"Restraining order":"Yes",
+"Violence against others":"Yes"
 },
 
-"David Lopez": {
-"Criminal record": "No",
-"Substance abuse": "No known issues",
-"Previous restraining order": "No",
-"Violence against others": "No",
-"Notes": "No police incidents recorded"
+"David Lopez":{
+"Criminal record":"No",
+"Substance abuse":"None",
+"Restraining order":"No",
+"Violence against others":"No"
 },
 
-"Ahmed Hassan": {
-"Criminal record": "Yes",
-"Substance abuse": "Drug use suspected",
-"Previous restraining order": "Unknown",
-"Violence against others": "Yes",
-"Notes": "Police intervention for street fight (2022)"
+"Ahmed Hassan":{
+"Criminal record":"Yes",
+"Substance abuse":"Drug use suspected",
+"Restraining order":"Unknown",
+"Violence against others":"Yes"
 }
 
 }
 
 if st.button("Search Police Records"):
 
-    if aggressor_name in police_database:
+    if aggressor_name in database:
 
-        record = police_database[aggressor_name]
+        record = database[aggressor_name]
 
         st.success("Record found")
 
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.write("**Criminal record:**", record["Criminal record"])
-            st.write("**Substance abuse:**", record["Substance abuse"])
-
-        with col2:
-            st.write("**Previous restraining order:**", record["Previous restraining order"])
-            st.write("**Violence against others:**", record["Violence against others"])
-
-        st.write("**Notes:**", record["Notes"])
-
-    else:
-        st.warning("No police records found for this individual")
-
-st.divider()
-
-# --- WITNESS TESTIMONIES ---
-
-st.header("Witness Testimonies")
-
-if not st.session_state.interview_completed:
-
-    st.warning("Witness testimonies are locked. Complete the victim interview first.")
-
-else:
-
-    st.write("Witness testimonies must be requested. Processing may take some time.")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        if st.button("Request Neighbor Testimony A"):
-            with st.spinner("Contacting witness..."):
-                time.sleep(4)
-            st.session_state.vecinoA = True
-            st.success("Testimony received")
-
-        if st.button("Request Friend of Family"):
-            with st.spinner("Contacting witness..."):
-                time.sleep(3)
-            st.session_state.amigo = True
-            st.success("Testimony received")
-
-    with col2:
-
-        if st.button("Request Neighbor Testimony B"):
-            with st.spinner("Contacting witness..."):
-                time.sleep(5)
-            st.session_state.vecinaB = True
-            st.success("Testimony received")
-
-        if st.button("Request Emergency Doctor"):
-            with st.spinner("Requesting medical record..."):
-                time.sleep(6)
-            st.session_state.medico = True
-            st.success("Medical testimony received")
-
-    st.divider()
-
-    if st.session_state.vecinoA:
-        st.write("Neighbor Testimony A")
-        st.audio("VECINO A.mp3")
-
-    if st.session_state.vecinaB:
-        st.write("Neighbor Testimony B")
-        st.audio("VECINA B.mp3")
-
-    if st.session_state.amigo:
-        st.write("Friend of Family")
-        st.audio("Amigo de la familia.mp3")
-
-    if st.session_state.medico:
-        st.write("Emergency Doctor")
-        st.audio("MEDICO.mp3")
-
-st.divider()
-
-# --- INTER-AGENCY INFORMATION REQUESTS ---
-
-st.header("Inter-Agency Information Requests")
-
-team_email = st.text_input("Police team email")
-
-institution = st.selectbox(
-"Request information from:",
-[
-"Social Services",
-"Medical Services",
-"Police Intelligence Unit",
-"School Administration"
-]
-)
-
-if st.button("Send Information Request"):
-
-    if team_email == "":
-        st.warning("Please enter a team email")
+        st.write(record)
 
     else:
 
-        formspree_url = "https://formspree.io/f/xgonleql"
-
-        data = {
-            "team_email": team_email,
-            "institution": institution,
-            "victim_case": victim,
-            "officer": officer,
-            "location": location,
-            "timestamp": datetime.now().isoformat()
-        }
-
-        try:
-            requests.post(formspree_url, data=data)
-
-            st.success("Request sent successfully")
-            st.info("Await response from the institution.")
-
-        except:
-            st.error("Error sending request")
+        st.warning("No police record found")
 
 st.divider()
 
-# --- INDICATORS ---
+# --- INDICATORS (REAL STRUCTURE) ---
 
 indicators = {
 
-"History of Violence": {
+"History of Violence":{
 
-"Psychological abuse (insults, humiliation)": ["None","Mild","Severe","Very Severe","Unknown"],
-"Physical violence": ["None","Mild","Severe","Very Severe","Unknown"],
-"Forced sexual activity": ["None","Mild","Severe","Very Severe","Unknown"],
+"Psychological abuse (insults, humiliation)":["None","Mild","Severe","Very Severe","Unknown"],
 
-"Use of weapons against victim": [
-"None","Knife / sharp weapon","Firearm","Other object","Unknown"
-],
+"Physical violence":["None","Mild","Severe","Very Severe","Unknown"],
 
-"Threats or plans to harm the victim": [
-"None","Mild threats","Serious threats","Threats of death/suicide","Unknown"
-],
+"Forced sexual activity":["None","Mild","Severe","Very Severe","Unknown"],
 
-"Escalation of violence in last 6 months": ["No","Yes","Unknown"]
+"Use of weapons against victim":["None","Knife / sharp weapon","Firearm","Other object","Unknown"],
+
+"Threats or plans to harm victim":["None","Mild threats","Serious threats","Threats of death/suicide","Unknown"],
+
+"Escalation of violence last 6 months":["No","Yes","Unknown"]
 
 },
 
-"Aggressor Characteristics": {
+"Aggressor Characteristics":{
 
-"Extreme jealousy or suspicions of infidelity": ["No","Yes","Unknown"],
-"Controlling behaviour": ["No","Yes","Unknown"],
-"Stalking or harassment behaviour": ["No","Yes","Unknown"],
+"Extreme jealousy":["No","Yes","Unknown"],
 
-"Aggressor experienced major stressors in last 6 months": [
-"No","Work/financial problems","Legal problems","Both","Unknown"
-],
+"Controlling behaviour":["No","Yes","Unknown"],
 
-"Property damage by aggressor in last year": ["No","Yes","Unknown"],
-"Disrespect toward police or authorities": ["No","Yes","Unknown"],
-"Aggression toward third persons or animals": ["No","Yes","Unknown"],
-"Threats or insults toward third parties": ["No","Yes","Unknown"],
-"Criminal or police record": ["No","Yes","Unknown"],
-"Previous restraining order violations": ["No","Yes","Unknown"],
-"Previous physical or sexual assaults": ["No","Yes","Unknown"],
-"Gender violence against previous partners": ["No","Yes","Unknown"],
-"Substance abuse": ["No","Yes","Unknown"],
-"Family history of domestic violence": ["No","Yes","Unknown"],
-"Aggressor under 24 years old": ["No","Yes","Unknown"]
+"Stalking behaviour":["No","Yes","Unknown"],
+
+"Major stressors last 6 months":["No","Work problems","Legal problems","Both","Unknown"],
+
+"Property damage last year":["No","Yes","Unknown"],
+
+"Disrespect toward authorities":["No","Yes","Unknown"],
+
+"Aggression against others":["No","Yes","Unknown"],
+
+"Threats against others":["No","Yes","Unknown"],
+
+"Criminal record":["No","Yes","Unknown"],
+
+"Restraining order violations":["No","Yes","Unknown"],
+
+"Previous assaults":["No","Yes","Unknown"],
+
+"Violence against previous partners":["No","Yes","Unknown"],
+
+"Mental disorder":["No","Yes","Unknown"],
+
+"Suicidal behaviour":["No","Yes","Unknown"],
+
+"Substance abuse":["No","Yes","Unknown"],
+
+"Family violence history":["No","Yes","Unknown"],
+
+"Aggressor under 24":["No","Yes","Unknown"]
+
+},
+
+"Victim Vulnerability":{
+
+"Victim illness or disability":["No","Yes","Unknown"],
+
+"Victim suicidal thoughts":["No","Yes","Unknown"],
+
+"Victim substance abuse":["No","Yes","Unknown"],
+
+"Lack of social support":["No","Yes","Unknown"],
+
+"Foreign victim":["No","Yes","Unknown"]
+
+},
+
+"Children Related Factors":{
+
+"Minor children":["No","Yes","Unknown"],
+
+"Threats against children":["No","Yes","Unknown"],
+
+"Victim fears harm to children":["No","Yes","Unknown"]
+
+},
+
+"Aggravating Circumstances":{
+
+"Previous reports":["No","Yes","Unknown"],
+
+"Reciprocal violence":["No","Yes","Unknown"],
+
+"Victim planning separation":["No","Yes","Unknown"],
+
+"Victim fears homicide":["No","Yes","Unknown"]
 
 }
 
 }
 
-# --- FLATTEN INDICATORS ---
+# --- FLATTEN LIST ---
 
-all_indicators = []
+all_indicators=[]
 
 for cat in indicators:
     for q in indicators[cat]:
         all_indicators.append(q)
 
-# --- STEP 1 WEIGHTS ---
+# --- WEIGHTS ---
 
 st.header("Step 1 — Indicator Weight Configuration")
 
-weights = {}
+weights={}
 
 for cat in indicators:
 
@@ -296,78 +226,68 @@ for cat in indicators:
 
         for q in indicators[cat]:
 
-            weights[q] = st.slider(q,0,5,1)
+            weights[q]=st.slider(q,0,5,1)
 
-# --- STEP 2 INTERVIEW ---
+# --- INTERVIEW ---
 
 st.header("Step 2 — Victim Interview")
 
-answers = {}
+answers={}
 
 for cat in indicators:
 
     st.subheader(cat)
 
-    cols = st.columns(2)
+    cols=st.columns(2)
 
-    i = 0
+    i=0
 
     for q,options in indicators[cat].items():
 
-        with cols[i % 2]:
+        with cols[i%2]:
 
-            answers[q] = st.radio(
-                q,
-                options,
-                horizontal=True
-            )
+            answers[q]=st.radio(q,options,horizontal=True)
 
-        i += 1
+        i+=1
 
-# --- SCORE CALCULATION ---
+# --- SCORE ---
 
 def calculate_score():
 
-    severity_multiplier = {
+    severity={
 
-    "None":0,
-    "No":0,
-    "Unknown":0,
-    "Yes":1,
-    "Mild":1,
-    "Severe":2,
-    "Very Severe":3,
-    "Knife / sharp weapon":2,
-    "Firearm":3,
-    "Other object":2,
-    "Mild threats":1,
-    "Serious threats":2,
-    "Threats of death/suicide":3,
-    "Work/financial problems":1,
-    "Legal problems":1,
-    "Both":2
+"None":0,"No":0,"Unknown":0,
 
-    }
+"Yes":1,
 
-    score = 0
+"Mild":1,"Severe":2,"Very Severe":3,
+
+"Knife / sharp weapon":2,"Firearm":3,"Other object":2,
+
+"Mild threats":1,"Serious threats":2,"Threats of death/suicide":3,
+
+"Work problems":1,"Legal problems":1,"Both":2
+
+}
+
+    score=0
 
     for q in all_indicators:
 
-        answer = answers[q]
-        multiplier = severity_multiplier.get(answer,0)
+        multiplier=severity.get(answers[q],0)
 
-        score += weights[q] * multiplier
+        score+=weights[q]*multiplier
 
     return score
 
 
 def classify(score):
 
-    if score <= 10:
+    if score<=10:
         return "LOW RISK"
-    elif score <= 20:
+    elif score<=20:
         return "MEDIUM RISK"
-    elif score <= 30:
+    elif score<=30:
         return "HIGH RISK"
     else:
         return "EXTREME RISK"
@@ -378,12 +298,12 @@ st.header("Step 3 — Risk Analysis")
 
 if st.button("🚨 Generate Risk Assessment"):
 
-    st.session_state.interview_completed = True
+    st.session_state.interview_done=True
 
-    score = calculate_score()
-    risk = classify(score)
+    score=calculate_score()
+    risk=classify(score)
 
-    col1,col2,col3 = st.columns(3)
+    col1,col2,col3=st.columns(3)
 
     with col1:
         st.metric("Risk Score",score)
@@ -394,38 +314,103 @@ if st.button("🚨 Generate Risk Assessment"):
     with col3:
         st.metric("Case ID",victim)
 
-    if risk == "EXTREME RISK":
-        st.error("⚠ Immediate protection measures recommended")
-
-    elif risk == "HIGH RISK":
-        st.warning("⚠ High monitoring recommended")
-
-    elif risk == "MEDIUM RISK":
-        st.info("Monitor situation")
-
-    else:
-        st.success("No immediate protection measures required")
-
-    data = []
+    data=[]
 
     for q in all_indicators:
 
-        val = 1 if answers[q] not in ["No","None","Unknown"] else 0
+        val=1 if answers[q] not in ["No","None","Unknown"] else 0
 
-        data.append([
-            q,
-            answers[q],
-            weights[q],
-            val * weights[q]
-        ])
+        data.append([q,answers[q],weights[q],val*weights[q]])
 
-    df = pd.DataFrame(data,columns=[
-        "Indicator",
-        "Answer",
-        "Weight",
-        "Contribution"
-    ])
+    df=pd.DataFrame(data,columns=["Indicator","Answer","Weight","Contribution"])
 
     st.subheader("Indicator Contribution")
 
     st.dataframe(df,use_container_width=True)
+
+st.divider()
+
+# --- TESTIMONIES ---
+
+st.header("Witness Testimonies")
+
+if not st.session_state.interview_done:
+
+    st.warning("Complete victim interview first")
+
+else:
+
+    col1,col2=st.columns(2)
+
+    with col1:
+
+        if st.button("Request Neighbor A"):
+            with st.spinner("Contacting witness..."):
+                time.sleep(3)
+            st.session_state.audio1=True
+
+        if st.button("Request Friend"):
+            with st.spinner("Contacting witness..."):
+                time.sleep(3)
+            st.session_state.audio2=True
+
+    with col2:
+
+        if st.button("Request Neighbor B"):
+            with st.spinner("Contacting witness..."):
+                time.sleep(3)
+            st.session_state.audio3=True
+
+        if st.button("Request Doctor"):
+            with st.spinner("Requesting medical record..."):
+                time.sleep(4)
+            st.session_state.audio4=True
+
+    if st.session_state.audio1:
+        st.audio("VECINO A.mp3")
+
+    if st.session_state.audio2:
+        st.audio("Amigo de la familia.mp3")
+
+    if st.session_state.audio3:
+        st.audio("VECINA B.mp3")
+
+    if st.session_state.audio4:
+        st.audio("MEDICO.mp3")
+
+st.divider()
+
+# --- INFORMATION REQUEST ---
+
+st.header("Inter-Agency Information Requests")
+
+team_email=st.text_input("Police team email")
+
+institution=st.selectbox("Request information from",[
+"Social Services",
+"Medical Services",
+"Police Intelligence Unit",
+"School Administration"
+])
+
+if st.button("Send Information Request"):
+
+    if team_email=="":
+        st.warning("Enter email")
+
+    else:
+
+        url="https://formspree.io/f/xgonleql"
+
+        data={
+        "email":team_email,
+        "institution":institution,
+        "case":victim,
+        "officer":officer,
+        "location":location,
+        "time":datetime.now().isoformat()
+        }
+
+        requests.post(url,data=data)
+
+        st.success("Request sent")
