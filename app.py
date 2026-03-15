@@ -35,7 +35,7 @@ Internal Police Tool — Gender Violence Risk Assessment
 
 st.divider()
 
-# --- SESSION STATE INITIALIZATION ---
+# --- SESSION STATE ---
 
 if "interview_completed" not in st.session_state:
     st.session_state.interview_completed = False
@@ -51,7 +51,6 @@ if "amigo" not in st.session_state:
 
 if "medico" not in st.session_state:
     st.session_state.medico = False
-
 
 # --- SIDEBAR ---
 
@@ -146,7 +145,7 @@ else:
 
         if st.button("Request Friend of Family"):
             with st.spinner("Contacting witness..."):
-                time.sleep(60)
+                time.sleep(3)
             st.session_state.amigo = True
             st.success("Testimony received")
 
@@ -154,13 +153,13 @@ else:
 
         if st.button("Request Neighbor Testimony B"):
             with st.spinner("Contacting witness..."):
-                time.sleep(120)
+                time.sleep(5)
             st.session_state.vecinaB = True
             st.success("Testimony received")
 
         if st.button("Request Emergency Doctor"):
             with st.spinner("Requesting medical record..."):
-                time.sleep(360)
+                time.sleep(6)
             st.session_state.medico = True
             st.success("Medical testimony received")
 
@@ -175,7 +174,7 @@ else:
         st.audio("VECINA B.mp3")
 
     if st.session_state.amigo:
-        st.write("Friend of the Family")
+        st.write("Friend of Family")
         st.audio("Amigo de la familia.mp3")
 
     if st.session_state.medico:
@@ -270,6 +269,7 @@ indicators = {
 "Previous physical or sexual assaults": ["No","Yes","Unknown"],
 "Gender violence against previous partners": ["No","Yes","Unknown"],
 "Substance abuse": ["No","Yes","Unknown"],
+"Family history of domestic violence": ["No","Yes","Unknown"],
 "Aggressor under 24 years old": ["No","Yes","Unknown"]
 
 }
@@ -329,12 +329,24 @@ for cat in indicators:
 def calculate_score():
 
     severity_multiplier = {
-    "None":0,"No":0,"Unknown":0,
+
+    "None":0,
+    "No":0,
+    "Unknown":0,
     "Yes":1,
-    "Mild":1,"Severe":2,"Very Severe":3,
-    "Knife / sharp weapon":2,"Firearm":3,"Other object":2,
-    "Mild threats":1,"Serious threats":2,"Threats of death/suicide":3,
-    "Work/financial problems":1,"Legal problems":1,"Both":2
+    "Mild":1,
+    "Severe":2,
+    "Very Severe":3,
+    "Knife / sharp weapon":2,
+    "Firearm":3,
+    "Other object":2,
+    "Mild threats":1,
+    "Serious threats":2,
+    "Threats of death/suicide":3,
+    "Work/financial problems":1,
+    "Legal problems":1,
+    "Both":2
+
     }
 
     score = 0
@@ -381,3 +393,39 @@ if st.button("🚨 Generate Risk Assessment"):
 
     with col3:
         st.metric("Case ID",victim)
+
+    if risk == "EXTREME RISK":
+        st.error("⚠ Immediate protection measures recommended")
+
+    elif risk == "HIGH RISK":
+        st.warning("⚠ High monitoring recommended")
+
+    elif risk == "MEDIUM RISK":
+        st.info("Monitor situation")
+
+    else:
+        st.success("No immediate protection measures required")
+
+    data = []
+
+    for q in all_indicators:
+
+        val = 1 if answers[q] not in ["No","None","Unknown"] else 0
+
+        data.append([
+            q,
+            answers[q],
+            weights[q],
+            val * weights[q]
+        ])
+
+    df = pd.DataFrame(data,columns=[
+        "Indicator",
+        "Answer",
+        "Weight",
+        "Contribution"
+    ])
+
+    st.subheader("Indicator Contribution")
+
+    st.dataframe(df,use_container_width=True)
