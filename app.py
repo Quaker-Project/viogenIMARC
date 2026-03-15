@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
+import time
 from datetime import datetime
 
 st.set_page_config(
@@ -33,6 +34,24 @@ Internal Police Tool — Gender Violence Risk Assessment
 """)
 
 st.divider()
+
+# --- SESSION STATE INITIALIZATION ---
+
+if "interview_completed" not in st.session_state:
+    st.session_state.interview_completed = False
+
+if "vecinoA" not in st.session_state:
+    st.session_state.vecinoA = False
+
+if "vecinaB" not in st.session_state:
+    st.session_state.vecinaB = False
+
+if "amigo" not in st.session_state:
+    st.session_state.amigo = False
+
+if "medico" not in st.session_state:
+    st.session_state.medico = False
+
 
 # --- SIDEBAR ---
 
@@ -107,25 +126,60 @@ st.divider()
 
 st.header("Witness Testimonies")
 
-st.write("Officers may listen to witness statements collected during the investigation.")
+if not st.session_state.interview_completed:
 
-col1, col2 = st.columns(2)
+    st.warning("Witness testimonies are locked. Complete the victim interview first.")
 
-with col1:
+else:
 
-    if st.button("Neighbor Testimony A"):
+    st.write("Witness testimonies must be requested. Processing may take some time.")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        if st.button("Request Neighbor Testimony A"):
+            with st.spinner("Contacting witness..."):
+                time.sleep(4)
+            st.session_state.vecinoA = True
+            st.success("Testimony received")
+
+        if st.button("Request Friend of Family"):
+            with st.spinner("Contacting witness..."):
+                time.sleep(60)
+            st.session_state.amigo = True
+            st.success("Testimony received")
+
+    with col2:
+
+        if st.button("Request Neighbor Testimony B"):
+            with st.spinner("Contacting witness..."):
+                time.sleep(120)
+            st.session_state.vecinaB = True
+            st.success("Testimony received")
+
+        if st.button("Request Emergency Doctor"):
+            with st.spinner("Requesting medical record..."):
+                time.sleep(360)
+            st.session_state.medico = True
+            st.success("Medical testimony received")
+
+    st.divider()
+
+    if st.session_state.vecinoA:
+        st.write("Neighbor Testimony A")
         st.audio("VECINO A.mp3")
 
-    if st.button("Friend of family"):
-        st.audio("Amigo de la familia.mp3")
-
-
-with col2:
-
-    if st.button("Neighbor Testimony B"):
+    if st.session_state.vecinaB:
+        st.write("Neighbor Testimony B")
         st.audio("VECINA B.mp3")
 
-    if st.button("Emergency Doctor"):
+    if st.session_state.amigo:
+        st.write("Friend of the Family")
+        st.audio("Amigo de la familia.mp3")
+
+    if st.session_state.medico:
+        st.write("Emergency Doctor")
         st.audio("MEDICO.mp3")
 
 st.divider()
@@ -215,38 +269,8 @@ indicators = {
 "Previous restraining order violations": ["No","Yes","Unknown"],
 "Previous physical or sexual assaults": ["No","Yes","Unknown"],
 "Gender violence against previous partners": ["No","Yes","Unknown"],
-"Mental or psychiatric disorder": ["No","Yes","Unknown"],
-"Suicidal ideation or attempts": ["No","Yes","Unknown"],
 "Substance abuse": ["No","Yes","Unknown"],
-"Family history of domestic violence": ["No","Yes","Unknown"],
 "Aggressor under 24 years old": ["No","Yes","Unknown"]
-
-},
-
-"Victim Vulnerability": {
-
-"Victim has serious illness or disability": ["No","Yes","Unknown"],
-"Victim suicidal thoughts or attempts": ["No","Yes","Unknown"],
-"Victim substance abuse": ["No","Yes","Unknown"],
-"Lack of social or family support": ["No","Yes","Unknown"],
-"Foreign victim": ["No","Yes","Unknown"]
-
-},
-
-"Children Related Factors": {
-
-"Victim has minor children": ["No","Yes","Unknown"],
-"Threats against children": ["No","Yes","Unknown"],
-"Victim fears harm to children": ["No","Yes","Unknown"]
-
-},
-
-"Aggravating Circumstances": {
-
-"Victim previously reported other aggressors": ["No","Yes","Unknown"],
-"Reciprocal or lateral violence between partners": ["No","Yes","Unknown"],
-"Victim expressed intention to end relationship in last 6 months": ["No","Yes","Unknown"],
-"Victim believes aggressor could seriously harm or kill her": ["No","Yes","Unknown"]
 
 }
 
@@ -305,24 +329,12 @@ for cat in indicators:
 def calculate_score():
 
     severity_multiplier = {
-
-    "None":0,
-    "No":0,
-    "Unknown":0,
+    "None":0,"No":0,"Unknown":0,
     "Yes":1,
-    "Mild":1,
-    "Severe":2,
-    "Very Severe":3,
-    "Knife / sharp weapon":2,
-    "Firearm":3,
-    "Other object":2,
-    "Mild threats":1,
-    "Serious threats":2,
-    "Threats of death/suicide":3,
-    "Work/financial problems":1,
-    "Legal problems":1,
-    "Both":2
-
+    "Mild":1,"Severe":2,"Very Severe":3,
+    "Knife / sharp weapon":2,"Firearm":3,"Other object":2,
+    "Mild threats":1,"Serious threats":2,"Threats of death/suicide":3,
+    "Work/financial problems":1,"Legal problems":1,"Both":2
     }
 
     score = 0
@@ -354,6 +366,8 @@ st.header("Step 3 — Risk Analysis")
 
 if st.button("🚨 Generate Risk Assessment"):
 
+    st.session_state.interview_completed = True
+
     score = calculate_score()
     risk = classify(score)
 
@@ -367,51 +381,3 @@ if st.button("🚨 Generate Risk Assessment"):
 
     with col3:
         st.metric("Case ID",victim)
-
-    if risk == "EXTREME RISK":
-        st.error("⚠ Immediate protection measures recommended")
-
-    elif risk == "HIGH RISK":
-        st.warning("⚠ High monitoring recommended")
-
-    elif risk == "MEDIUM RISK":
-        st.info("Monitor situation")
-
-    else:
-        st.success("No immediate protection measures required")
-
-    data = []
-
-    severity_multiplier = {
-        "None":0,"No":0,"Unknown":0,
-        "Yes":1,
-        "Mild":1,"Severe":2,"Very Severe":3,
-        "Knife / sharp weapon":2,"Firearm":3,"Other object":2,
-        "Mild threats":1,"Serious threats":2,"Threats of death/suicide":3,
-        "Work/financial problems":1,"Legal problems":1,"Both":2
-    }
-
-    for q in all_indicators:
-
-        answer = answers[q]
-        multiplier = severity_multiplier.get(answer,0)
-
-        contribution = weights[q] * multiplier
-
-        data.append([
-            q,
-            answer,
-            weights[q],
-            contribution
-        ])
-
-    df = pd.DataFrame(data,columns=[
-        "Indicator",
-        "Answer",
-        "Weight",
-        "Contribution"
-    ])
-
-    st.subheader("Indicator Contribution")
-
-    st.dataframe(df,use_container_width=True)
