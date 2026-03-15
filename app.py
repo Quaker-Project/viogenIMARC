@@ -117,7 +117,7 @@ with col1:
         st.audio("VECINO A.mp3")
 
     if st.button("Friend of family"):
-        st.audio("amigo de la familia.mp3")
+        st.audio("Amigo de la familia.mp3")
 
 
 with col2:
