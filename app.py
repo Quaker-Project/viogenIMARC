@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 
 st.set_page_config(
-    page_title="VioGén Police Risk System",
+    page_title="GenderVio Police Risk System",
     page_icon="🚔",
     layout="wide"
 )
