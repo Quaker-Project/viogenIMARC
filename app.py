@@ -167,10 +167,10 @@ indicators = {
 "There are prior or current violations (of precautionary measures or criminal orders)":["No","Yes","Unknown"],
 "There are prior incidents of physical and/or sexual assaults":["No","Yes","Unknown"],
 "There is a history of gender-based violence against other partner(s)":["No","Yes","Unknown"],
-"Mental disorder":["No","Yes","Unknown"],
-"Suicidal behaviour":["No","Yes","Unknown"],
-"Substance abuse":["No","Yes","Unknown"],
-"Family violence history":["No","Yes","Unknown"],
+"The agressor has mental disorder":["No","Yes","Unknown"],
+"He has suicidal ideation or a history of suicide attempts":["No","Yes","Unknown"],
+"has some form of addiction or substance abuse (alcohol, drugs, or medication)":["No","Yes","Unknown"],
+"Family domestic violence history or gender-based violence history":["No","Yes","Unknown"],
 "Aggressor under 24":["No","Yes","Unknown"]
 
 },
