@@ -61,7 +61,7 @@ case_audios = {
 
 # --- HEADER ---
 
-st.title("🚔 VioGén Police Risk Assessment System")
+st.title("🚔 GenderVio Police Risk Assessment System")
 
 st.markdown("""
 Internal Police Tool — Gender Violence Risk Assessment
