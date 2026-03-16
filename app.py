@@ -57,6 +57,13 @@ case_audios = {
 "doctor": "case2_medico.mp3"
 }
 
+"Case-003": {
+"neighborA": "case3_vecinoA.mp3",
+"neighborB": "case3_vecinaB.mp3",
+"friend": "case3_amigo.mp3",
+"doctor": "case3_medico.mp3"
+}
+
 }
 
 # --- HEADER ---
