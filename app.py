@@ -195,10 +195,10 @@ indicators = {
 
 "Aggravating Circumstances":{
 
-"Previous reports":["No","Yes","Unknown"],
+"The victim has previously reported other perpetrators":["No","Yes","Unknown"],
 "Reciprocal violence":["No","Yes","Unknown"],
-"Victim planning separation":["No","Yes","Unknown"],
-"Victim fears homicide":["No","Yes","Unknown"]
+"The victim has told the aggressor of their intention to end the relationship within the past 6 months":["No","Yes","Unknown"],
+"The victim believes that the aggressor is capable of seriously assaulting her or even killing her":["No","Yes","Unknown"]
 
 }
 
