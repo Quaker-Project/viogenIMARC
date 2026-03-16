@@ -55,7 +55,7 @@ case_audios = {
 "neighborB": "case2_vecinaB.mp3",
 "friend": "case2_amigo.mp3",
 "doctor": "case2_medico.mp3"
-}
+},
 
 "Case-003": {
 "neighborA": "case3_vecinoA.mp3",
