@@ -146,7 +146,7 @@ indicators = {
 "Psychological abuse (insults, humiliation)":["None","Mild","Severe","Very Severe","Unknown"],
 "Physical violence":["None","Mild","Severe","Very Severe","Unknown"],
 "Forced sexual activity":["None","Mild","Severe","Very Severe","Unknown"],
-"Use of weapons against victim":["None","Knife / sharp weapon","Firearm","Other object","Unknown"],
+"Use of weapons or objects against the victim":["None","Knife / sharp weapon","Firearm","Other object","Unknown"],
 "Threats or plans to harm victim":["None","Mild threats","Serious threats","Threats of death/suicide","Unknown"],
 "Escalation of violence last 6 months":["No","Yes","Unknown"]
 
