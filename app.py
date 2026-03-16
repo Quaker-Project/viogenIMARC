@@ -148,6 +148,7 @@ indicators = {
 "Forced sexual activity":["None","Mild","Severe","Very Severe","Unknown"],
 "Use of weapons or objects against the victim":["None","Knife / sharp weapon","Firearm","Other object","Unknown"],
 "Threats or plans to harm victim":["None","Mild threats","Serious threats","Threats of death/suicide","Unknown"],
+"Threats of suicide by the aggressor":["No","Yes"]
 "Escalation of violence last 6 months":["No","Yes","Unknown"]
 
 },
