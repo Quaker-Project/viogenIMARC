@@ -111,7 +111,7 @@ database = {
 "Violence against others":"No"
 },
 
-"David Lopez":{
+"Alejandro Garcia":{
 "Criminal record":"Intimate Partner Violence",
 "Cautionary meassure":"njuction for protection. A prohibition on approaching the victim within 500 metres. Also prohibition on the possession and use of weapons",
 "Violence against others":"In 2016, he threw a glass at a man outside a nightclub"
