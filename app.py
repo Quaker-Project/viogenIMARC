@@ -112,14 +112,14 @@ database = {
 },
 
 "David Lopez":{
-"Criminal record":"No",
-"Cautionary meassure":"No",
+"Criminal record":"Intimate Partner Violence",
+"Cautionary meassure":"njuction for protection. A prohibition on approaching the victim within 500 metres",
 "Violence against others":"In 2016, he threw a glass at a man outside a nightclub"
 },
 
 "Ahmed Hassan":{
-"Criminal record":"No",
-"Cautionary meassure":"Injuction for protection. A prohibition on approaching the victim within 500 metres",
+"Criminal record":"Yes",
+"Cautionary meassure":"No",
 "Violence against others":"Theft by violence"
 }
 
