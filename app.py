@@ -106,24 +106,21 @@ aggressor_name = st.text_input("Search aggressor name")
 database = {
 
 "Juan Martinez":{
-"Criminal record":"Yes",
-"Substance abuse":"Alcohol abuse",
-"Restraining order":"No",
-"Violence against others":"Yes"
+"Criminal record":"Yes. On June 12, 2023, he was convicted of a road safety offense",
+"Cautionary meassure":"No",
+"Violence against others":"No"
 },
 
 "David Lopez":{
 "Criminal record":"No",
-"Substance abuse":"Unknown",
-"Restraining order":"No",
-"Violence against others":"a slight suspicion"
+"Cautionary meassure":"No",
+"Violence against others":"In 2016, he threw a glass at a man outside a nightclub"
 },
 
 "Ahmed Hassan":{
-"Criminal record":"Yes",
-"Substance abuse":"Drug use suspected",
-"Restraining order":"Unknown",
-"Violence against others":"Yes"
+"Criminal record":"No",
+"Cautionary meassure":"Injuction for protection. A prohibition on approaching the victim within 500 metres",
+"Violence against others":"Theft by violence"
 }
 
 }
