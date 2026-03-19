@@ -38,33 +38,8 @@ if "audio3" not in st.session_state:
 if "audio4" not in st.session_state:
     st.session_state.audio4 = False
 
-
-# --- CASE AUDIO CONFIGURATION ---
-
-case_audios = {
-
-"Case-001": {
-"neighborA": "case1_vecinoA.mp3",
-"neighborB": "case1_vecinaB.mp3",
-"friend": "case1_amigo.mp3",
-"doctor": "case1_medico.mp3"
-},
-
-"Case-002": {
-"neighborA": "case2_vecinoA.mp3",
-"neighborB": "case2_vecinaB.mp3",
-"friend": "case2_amigo.mp3",
-"doctor": "case2_medico.mp3"
-},
-
-"Case-003": {
-"neighborA": "case3_vecinoA.mp3",
-"neighborB": "case3_vecinaB.mp3",
-"friend": "case3_amigo.mp3",
-"doctor": "case3_medico.mp3"
-}
-
-}
+if "last_case" not in st.session_state:
+    st.session_state.last_case = "Case-001"
 
 # --- HEADER ---
 
@@ -89,6 +64,42 @@ officer = st.sidebar.text_input("Officer Name")
 location = st.sidebar.text_input("Police Unit")
 
 st.sidebar.info("Training Simulation Mode")
+
+# --- RESET AUDIOS WHEN CASE CHANGES ---
+
+if st.session_state.last_case != victim:
+    st.session_state.audio1 = False
+    st.session_state.audio2 = False
+    st.session_state.audio3 = False
+    st.session_state.audio4 = False
+    st.session_state.last_case = victim
+
+# --- CASE AUDIO CONFIGURATION ---
+
+case_audios = {
+
+"Case-001": {
+"neighborA": "case1_vecinoA.mp3",
+"neighborB": "case1_vecinaB.mp3",
+"friend": "case1_amigo.mp3",
+"doctor": "case1_medico.mp3"
+},
+
+"Case-002": {
+"neighborA": "case2_vecinoA.mp3",
+"neighborB": "case2_vecinaB.mp3",
+"friend": "case2_amigo.mp3",
+"doctor": "case2_medico.mp3"
+},
+
+"Case-003": {
+"neighborA": "",
+"neighborB": "",
+"friend": "",
+"doctor": ""
+}
+
+}
 
 # --- SELECT CASE AUDIO ---
 
@@ -347,6 +358,11 @@ if not st.session_state.interview_done:
 else:
 
     if victim == "Case-003":
+
+        st.session_state.audio1 = False
+        st.session_state.audio2 = False
+        st.session_state.audio3 = False
+        st.session_state.audio4 = False
 
         st.warning("⚠ No witness testimonies available for this case")
         st.info("Officers must rely solely on victim statement and available records")
