@@ -39,7 +39,7 @@ if "audio4" not in st.session_state:
     st.session_state.audio4 = False
 
 
-# --- CASE AUDIO CONFIGURATION (NEW) ---
+# --- CASE AUDIO CONFIGURATION ---
 
 case_audios = {
 
@@ -90,7 +90,7 @@ location = st.sidebar.text_input("Police Unit")
 
 st.sidebar.info("Training Simulation Mode")
 
-# --- SELECT CASE AUDIO (NEW) ---
+# --- SELECT CASE AUDIO ---
 
 if victim in case_audios:
     selected_case = case_audios[victim]
@@ -113,7 +113,7 @@ database = {
 
 "Alejandro Garcia":{
 "Criminal record":"Intimate Partner Violence",
-"Cautionary meassure":"njuction for protection. A prohibition on approaching the victim within 500 metres. Also prohibition on the possession and use of weapons",
+"Cautionary meassure":"Injunction for protection. A prohibition on approaching the victim within 500 metres. Also prohibition on the possession and use of weapons",
 "Violence against others":"In 2016, he threw a glass at a man outside a nightclub"
 },
 
@@ -346,43 +346,50 @@ if not st.session_state.interview_done:
 
 else:
 
-    col1,col2=st.columns(2)
+    if victim == "Case-003":
 
-    with col1:
+        st.warning("⚠ No witness testimonies available for this case")
+        st.info("Officers must rely solely on victim statement and available records")
 
-        if st.button("Request Neighbor A"):
-            with st.spinner("Contacting witness..."):
-                time.sleep(15)
-            st.session_state.audio1=True
+    else:
 
-        if st.button("Request Friend"):
-            with st.spinner("Contacting witness..."):
-                time.sleep(25)
-            st.session_state.audio2=True
+        col1,col2=st.columns(2)
 
-    with col2:
+        with col1:
 
-        if st.button("Request Neighbor B"):
-            with st.spinner("Contacting witness..."):
-                time.sleep(30)
-            st.session_state.audio3=True
+            if st.button("Request Neighbor A"):
+                with st.spinner("Contacting witness..."):
+                    time.sleep(15)
+                st.session_state.audio1=True
 
-        if st.button("Request Doctor"):
-            with st.spinner("Requesting medical record..."):
-                time.sleep(10)
-            st.session_state.audio4=True
+            if st.button("Request Friend"):
+                with st.spinner("Contacting witness..."):
+                    time.sleep(25)
+                st.session_state.audio2=True
 
-    if st.session_state.audio1:
-        st.audio(selected_case["neighborA"])
+        with col2:
 
-    if st.session_state.audio2:
-        st.audio(selected_case["friend"])
+            if st.button("Request Neighbor B"):
+                with st.spinner("Contacting witness..."):
+                    time.sleep(30)
+                st.session_state.audio3=True
 
-    if st.session_state.audio3:
-        st.audio(selected_case["neighborB"])
+            if st.button("Request Doctor"):
+                with st.spinner("Requesting medical record..."):
+                    time.sleep(10)
+                st.session_state.audio4=True
 
-    if st.session_state.audio4:
-        st.audio(selected_case["doctor"])
+        if st.session_state.audio1:
+            st.audio(selected_case["neighborA"])
+
+        if st.session_state.audio2:
+            st.audio(selected_case["friend"])
+
+        if st.session_state.audio3:
+            st.audio(selected_case["neighborB"])
+
+        if st.session_state.audio4:
+            st.audio(selected_case["doctor"])
 
 st.divider()
 
