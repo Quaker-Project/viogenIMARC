@@ -128,7 +128,7 @@ database = {
 "Violence against others":"In 2016, he threw a glass at a man outside a nightclub"
 },
 
-"Ahmed Hassan":{
+"Peter Gold":{
 "Criminal record":"No",
 "Cautionary meassure":"No",
 "Violence against others":"No"
