@@ -288,11 +288,11 @@ def calculate_score():
 
 def classify(score):
 
-    if score<=10:
+    if score<=25:
         return "LOW RISK"
-    elif score<=20:
+    elif score<=60:
         return "MEDIUM RISK"
-    elif score<=30:
+    elif score<=110:
         return "HIGH RISK"
     else:
         return "EXTREME RISK"
