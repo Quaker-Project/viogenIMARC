@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as st 
 import pandas as pd
 import requests
 import time
@@ -50,7 +50,8 @@ Internal Police Tool — Gender Violence Risk Assessment
 
 1️⃣ Define indicator weights  
 2️⃣ Conduct victim interview  
-3️⃣ Generate risk classification
+3️⃣ Define risk thresholds  
+4️⃣ Generate risk classification
 """)
 
 st.divider()
@@ -263,6 +264,21 @@ for cat in indicators:
 
         i+=1
 
+# --- NEW: THRESHOLDS ---
+
+st.header("Step 3 — Risk Threshold Configuration")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    low_threshold = st.number_input("Max LOW risk", value=25)
+
+with col2:
+    medium_threshold = st.number_input("Max MEDIUM risk", value=60)
+
+with col3:
+    high_threshold = st.number_input("Max HIGH risk", value=110)
+
 # --- SCORE ---
 
 def calculate_score():
@@ -288,18 +304,18 @@ def calculate_score():
 
 def classify(score):
 
-    if score<=25:
+    if score<=low_threshold:
         return "LOW RISK"
-    elif score<=60:
+    elif score<=medium_threshold:
         return "MEDIUM RISK"
-    elif score<=110:
+    elif score<=high_threshold:
         return "HIGH RISK"
     else:
         return "EXTREME RISK"
 
 # --- ANALYSIS ---
 
-st.header("Step 3 — Risk Analysis")
+st.header("Step 4 — Risk Analysis")
 
 if st.button("🚨 Generate Risk Assessment"):
 
