@@ -129,7 +129,7 @@ database = {
 "Violence against others":"In 2016, he threw a glass at a man outside a nightclub"
 },
 
-"Peter Gold":{
+"David Gold":{
 "Criminal record":"Drug trafficking. In 2025, he was caught with 250 grams of hashish in the boot of his car.",
 "Cautionary meassure":"No",
 "Violence against others":"No"
