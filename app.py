@@ -130,7 +130,7 @@ database = {
 },
 
 "Peter Gold":{
-"Criminal record":"No",
+"Criminal record":"Drug trafficking. In 2025, he was caught with 250 grams of hashish in the boot of his car.",
 "Cautionary meassure":"No",
 "Violence against others":"No"
 }
