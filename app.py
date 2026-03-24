@@ -61,7 +61,7 @@ st.divider()
 st.sidebar.header("Case File")
 
 victim = st.sidebar.text_input("Victim ID","Case-001")
-officer = st.sidebar.text_input("Officer Name")
+officer = st.sidebar.text_input("Officer's Name")
 location = st.sidebar.text_input("Police Unit")
 
 st.sidebar.info("Training Simulation Mode")
