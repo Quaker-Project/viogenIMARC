@@ -434,7 +434,7 @@ team_email=st.text_input("Police team email")
 institution=st.selectbox("Request information from",[
 "Social Services",
 "Medical Services",
-"Police Intelligence Unit",
+"Judicial System",
 "School Administration"
 ])
 
