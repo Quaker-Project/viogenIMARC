@@ -489,11 +489,11 @@ else:
     st.markdown(f"[Open Group A Folder]({group_a_link})")
 
 from docx import Document
+from docx.shared import Inches
 from io import BytesIO
+from datetime import datetime
 
 st.subheader("🧠 Peer Review")
-
-st.write("Write your evaluation of the other group's report:")
 
 peer_review = st.text_area("Your critique")
 
@@ -507,27 +507,51 @@ if st.button("Generate Word Review"):
     else:
         doc = Document()
 
-        # --- TITLE ---
-        doc.add_heading('Peer Review Report', 0)
+        # --- LOGO + HEADER SEGÚN POLICE UNIT ---
+
+        unit = location.strip().upper()
+
+        if unit == "CNP":
+            try:
+                doc.add_picture("assets/cnp_logo.png", width=Inches(1.5))
+            except:
+                pass
+            doc.add_heading('SPANISH NATIONAL POLICE', 1)
+
+        elif unit == "GC":
+            try:
+                doc.add_picture("assets/gc_logo.png", width=Inches(1.5))
+            except:
+                pass
+            doc.add_heading('GUARDIA CIVIL', 1)
+
+        else:
+            doc.add_heading('MINISTRY OF INTERIOR', 1)
+
+        # --- SUBHEADER ---
+        doc.add_paragraph('Risk Assessment Peer Review Unit')
+
+        doc.add_paragraph("\n")
 
         # --- METADATA ---
+        doc.add_heading('Case Information', level=2)
         doc.add_paragraph(f"Group: {group}")
-        doc.add_paragraph(f"Case: {victim}")
+        doc.add_paragraph(f"Case ID: {victim}")
         doc.add_paragraph(f"Officer: {officer}")
+        doc.add_paragraph(f"Unit: {location}")
         doc.add_paragraph(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
 
         doc.add_paragraph("\n")
 
         # --- CONTENT ---
-        doc.add_heading('Assessment', level=1)
+        doc.add_heading('Peer Review Assessment', level=2)
         doc.add_paragraph(peer_review)
 
-        # --- SAVE TO MEMORY ---
+        # --- SAVE ---
         buffer = BytesIO()
         doc.save(buffer)
         buffer.seek(0)
 
-        # --- DOWNLOAD BUTTON ---
         st.download_button(
             label="📥 Download Word Report",
             data=buffer,
@@ -535,4 +559,4 @@ if st.button("Generate Word Review"):
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
 
-        st.success("Word file ready. Upload it to your Drive folder.")
+        st.success("Word file generated with institutional format")
