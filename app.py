@@ -488,10 +488,51 @@ else:
     st.subheader("📥 Review Group A reports")
     st.markdown(f"[Open Group A Folder]({group_a_link})")
 
+from docx import Document
+from io import BytesIO
+
 st.subheader("🧠 Peer Review")
 
-st.write("After reviewing the other group's report, write your evaluation:")
+st.write("Write your evaluation of the other group's report:")
 
 peer_review = st.text_area("Your critique")
 
-st.info("Upload your peer review in your group's Drive folder as a document named: REVIEW_CASE")
+file_name = f"{group}_{victim}_REVIEW.docx"
+
+if st.button("Generate Word Review"):
+
+    if peer_review.strip() == "":
+        st.warning("Please write your review first")
+
+    else:
+        doc = Document()
+
+        # --- TITLE ---
+        doc.add_heading('Peer Review Report', 0)
+
+        # --- METADATA ---
+        doc.add_paragraph(f"Group: {group}")
+        doc.add_paragraph(f"Case: {victim}")
+        doc.add_paragraph(f"Officer: {officer}")
+        doc.add_paragraph(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+
+        doc.add_paragraph("\n")
+
+        # --- CONTENT ---
+        doc.add_heading('Assessment', level=1)
+        doc.add_paragraph(peer_review)
+
+        # --- SAVE TO MEMORY ---
+        buffer = BytesIO()
+        doc.save(buffer)
+        buffer.seek(0)
+
+        # --- DOWNLOAD BUTTON ---
+        st.download_button(
+            label="📥 Download Word Report",
+            data=buffer,
+            file_name=file_name,
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
+
+        st.success("Word file ready. Upload it to your Drive folder.")
