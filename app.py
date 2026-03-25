@@ -459,3 +459,39 @@ if st.button("Send Information Request"):
         requests.post(url,data=data)
 
         st.success("Request sent")
+
+st.divider()
+st.header("📄 Risk Justification Exchange")
+
+group = st.selectbox("Select your group:", ["Group A","Group B"])
+
+# --- LINKS (PEGA AQUÍ LOS TUYOS) ---
+
+group_a_link = "https://drive.google.com/drive/folders/1DL3-WunHe6-x0DVDp7HyEliSHA7b9Csg?usp=sharing"
+group_b_link = "https://drive.google.com/drive/folders/1RON9R9DX7e0VK95QmNYLBp-lWrv9W0KB?usp=sharing"
+
+# --- SHOW LINKS ---
+
+if group == "Group A":
+
+    st.subheader("📤 Upload your report")
+    st.markdown(f"[Open Group A Folder]({group_a_link})")
+
+    st.subheader("📥 Review Group B reports")
+    st.markdown(f"[Open Group B Folder]({group_b_link})")
+
+else:
+
+    st.subheader("📤 Upload your report")
+    st.markdown(f"[Open Group B Folder]({group_b_link})")
+
+    st.subheader("📥 Review Group A reports")
+    st.markdown(f"[Open Group A Folder]({group_a_link})")
+
+st.subheader("🧠 Peer Review")
+
+st.write("After reviewing the other group's report, write your evaluation:")
+
+peer_review = st.text_area("Your critique")
+
+st.info("Upload your peer review in your group's Drive folder as a document named: REVIEW_CASE")
