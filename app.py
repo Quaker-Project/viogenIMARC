@@ -495,7 +495,7 @@ from datetime import datetime
 
 st.subheader("🧠 Peer Review")
 
-peer_review = st.text_area("Your critique")
+peer_review = st.text_area("Your review")
 
 file_name = f"{group}_{victim}_REVIEW.docx"
 
