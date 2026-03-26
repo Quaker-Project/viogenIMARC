@@ -4,6 +4,20 @@ import requests
 import time
 from datetime import datetime
 
+st.markdown("""
+<div style="
+    background-color:#7f1d1d;
+    color:white;
+    padding:12px;
+    border-radius:8px;
+    text-align:center;
+    font-weight:bold;
+    margin-bottom:20px;
+">
+⚠️ SYSTEM NOTICE: We are experiencing unusual issues — Please excuse the inconvenience
+</div>
+""", unsafe_allow_html=True)
+
 st.set_page_config(
     page_title="GenderVio Police Risk System",
     page_icon="🚔",
