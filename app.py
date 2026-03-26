@@ -6,7 +6,7 @@ from datetime import datetime
 
 st.markdown("""
 <div style="
-    background-color:#7f1d1d;
+    background-color:#559c00;
     color:white;
     padding:12px;
     border-radius:8px;
@@ -14,7 +14,7 @@ st.markdown("""
     font-weight:bold;
     margin-bottom:20px;
 ">
-⚠️ SYSTEM NOTICE: We are experiencing unusual issues — Please excuse the inconvenience
+⚠️ SYSTEM NOTICE: The system is now working again
 </div>
 """, unsafe_allow_html=True)
 
