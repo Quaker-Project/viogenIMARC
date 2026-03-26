@@ -81,7 +81,7 @@ location = st.sidebar.text_input("Police Unit")
 
 st.sidebar.info("Training Simulation Mode")
 
-# --- RESET AUDIOS ---
+# --- RESET AUDIOS WHEN CASE CHANGES ---
 
 if st.session_state.last_case != victim:
     st.session_state.audio1 = False
@@ -90,71 +90,139 @@ if st.session_state.last_case != victim:
     st.session_state.audio4 = False
     st.session_state.last_case = victim
 
-# --- CASE AUDIO CONFIG ---
+# --- CASE AUDIO CONFIGURATION ---
 
 case_audios = {
+
 "Case-001": {
 "neighborA": "case1_vecinoA.mp3",
 "neighborB": "case1_vecinaB.mp3",
 "friend": "case1_amigo.mp3",
 "doctor": "case1_medico.mp3"
 },
+
 "Case-002": {
 "neighborA": "case2_vecinoA.mp3",
 "neighborB": "case2_vecinaB.mp3",
 "friend": "case2_amigo.mp3",
 "doctor": "case2_medico.mp3"
 },
+
 "Case-003": {
 "neighborA": "",
 "neighborB": "",
 "friend": "",
 "doctor": ""
 }
+
 }
 
 selected_case = case_audios.get(victim, case_audios["Case-001"])
 
-# --- DATABASE ---
+# --- POLICE DATABASE ---
 
 st.header("Police Intelligence Database")
 
 aggressor_name = st.text_input("Search aggressor's name")
 
 database = {
+
 "Juan Martinez":{
 "Criminal record":"No",
 "Cautionary meassure":"No",
 "Violence against others":"No"
 },
+
 "Alejandro Garcia":{
 "Criminal record":"Intimate Partner Violence",
-"Cautionary meassure":"Injunction for protection...",
-"Violence against others":"In 2016, he threw a glass at a man"
+"Cautionary meassure":"Injunction for protection. A prohibition on approaching the victim within 500 metres. Also prohibition on the possession and use of weapons",
+"Violence against others":"In 2016, he threw a glass at a man outside a nightclub"
 },
+
 "David Gold":{
 "Criminal record":"Drug trafficking",
 "Cautionary meassure":"No",
 "Violence against others":"No"
 }
+
 }
 
 if st.button("Search Police Records"):
+
     if aggressor_name in database:
+
         st.success("Record found")
         st.write(database[aggressor_name])
+
     else:
+
         st.warning("No police record found")
 
 st.divider()
 
 # --- INDICATORS ---
 
-indicators = { ... }  # (NO CAMBIO NADA AQUÍ, usa el tuyo completo)
+indicators = {
 
-# --- FLATTEN ---
+"History of Violence":{
+"Psychological abuse (insults, humiliation)":["None","Mild","Severe","Very Severe","Unknown"],
+"Physical violence":["None","Mild","Severe","Very Severe","Unknown"],
+"Forced sexual activity":["None","Mild","Severe","Very Severe","Unknown"],
+"Use of weapons or objects against the victim":["None","Knife / sharp weapon","Firearm","Other object","Unknown"],
+"Threats or plans to harm victim":["None","Mild threats","Serious threats","Threats of death/suicide","Unknown"],
+"Threats of suicide by the aggressor":["No","Yes"],
+"Escalation of violence last 6 months":["No","Yes","Unknown"]
+},
 
-all_indicators = [q for cat in indicators for q in indicators[cat]]
+"Aggressor Characteristics":{
+"Extreme jealousy":["No","Yes","Unknown"],
+"Controlling behaviour":["No","Yes","Unknown"],
+"Stalking behaviour":["No","Yes","Unknown"],
+"Major stressors last 6 months":["No","Work problems","Legal problems","Both","Unknown"],
+"Property damage last year":["No","Yes","Unknown"],
+"Disrespect toward authorities":["No","Yes","Unknown"],
+"Aggression against others":["No","Yes","Unknown"],
+"Threats against others":["No","Yes","Unknown"],
+"Criminal record":["No","Yes","Unknown"],
+"Restraining order violations":["No","Yes","Unknown"],
+"Previous assaults":["No","Yes","Unknown"],
+"Violence against previous partners":["No","Yes","Unknown"],
+"Mental disorder":["No","Yes","Unknown"],
+"Suicidal behaviour":["No","Yes","Unknown"],
+"Substance abuse":["No","Yes","Unknown"],
+"Family violence history":["No","Yes","Unknown"],
+"Aggressor under 24":["No","Yes","Unknown"]
+},
+
+"Victim Vulnerability":{
+"Victim illness or disability":["No","Yes","Unknown"],
+"Victim suicidal thoughts":["No","Yes","Unknown"],
+"Victim substance abuse":["No","Yes","Unknown"],
+"Lack of social support":["No","Yes","Unknown"],
+"Foreign victim":["No","Yes","Unknown"]
+},
+
+"Children Related Factors":{
+"Minor children":["No","Yes","Unknown"],
+"Threats against children":["No","Yes","Unknown"],
+"Victim fears harm to children":["No","Yes","Unknown"]
+},
+
+"Aggravating Circumstances":{
+"Previous reports":["No","Yes","Unknown"],
+"Reciprocal violence":["No","Yes","Unknown"],
+"Victim planning separation":["No","Yes","Unknown"],
+"Victim fears homicide":["No","Yes","Unknown"]
+}
+
+}
+
+# --- FLATTEN LIST ---
+
+all_indicators = []
+for cat in indicators:
+    for q in indicators[cat]:
+        all_indicators.append(q)
 
 # --- WEIGHTS ---
 
@@ -183,27 +251,32 @@ for cat in indicators:
 # --- SCORE ---
 
 def calculate_score():
-    severity = {
-        "None":0,"No":0,"Unknown":0,
-        "Yes":1,
-        "Mild":1,"Severe":2,"Very Severe":3,
-        "Knife / sharp weapon":2,"Firearm":3,"Other object":2,
-        "Mild threats":1,"Serious threats":2,"Threats of death/suicide":3,
-        "Work problems":1,"Legal problems":1,"Both":2
+
+    severity={
+    "None":0,"No":0,"Unknown":0,
+    "Yes":1,
+    "Mild":1,"Severe":2,"Very Severe":3,
+    "Knife / sharp weapon":2,"Firearm":3,"Other object":2,
+    "Mild threats":1,"Serious threats":2,"Threats of death/suicide":3,
+    "Work problems":1,"Legal problems":1,"Both":2
     }
-    score = 0
+
+    score=0
+
     for q in all_indicators:
-        score += weights[q] * severity.get(answers[q],0)
+        multiplier=severity.get(answers[q],0)
+        score+=weights[q]*multiplier
+
     return score
 
-# --- FIXED CLASSIFICATION ---
 
 def classify(score):
-    if score <= 40:
+
+    if score<=40:
         return "LOW RISK"
-    elif score <= 90:
+    elif score<=90:
         return "MEDIUM RISK"
-    elif score <= 160:
+    elif score<=160:
         return "HIGH RISK"
     else:
         return "EXTREME RISK"
@@ -214,12 +287,12 @@ st.header("Step 3 — Risk Analysis")
 
 if st.button("🚨 Generate Risk Assessment"):
 
-    st.session_state.interview_done = True
+    st.session_state.interview_done=True
 
-    score = calculate_score()
-    risk = classify(score)
+    score=calculate_score()
+    risk=classify(score)
 
-    col1,col2,col3 = st.columns(3)
+    col1,col2,col3=st.columns(3)
 
     col1.metric("Risk Score",score)
     col2.metric("Risk Level",risk)
@@ -235,46 +308,60 @@ if st.button("🚨 Generate Risk Assessment"):
         st.success("No immediate protection measures required")
 
     data=[]
+
     for q in all_indicators:
-        val = 1 if answers[q] not in ["No","None","Unknown"] else 0
+        val=1 if answers[q] not in ["No","None","Unknown"] else 0
         data.append([q,answers[q],weights[q],val*weights[q]])
 
-    df = pd.DataFrame(data,columns=["Indicator","Answer","Weight","Contribution"])
+    df=pd.DataFrame(data,columns=["Indicator","Answer","Weight","Contribution"])
 
     st.subheader("Indicator Contribution")
     st.dataframe(df,use_container_width=True)
 
+st.divider()
+
 # --- TESTIMONIES ---
 
-st.divider()
 st.header("Witness Testimonies")
 
 if not st.session_state.interview_done:
     st.warning("Complete victim interview first")
+
 else:
+
     if victim == "Case-003":
+
         st.warning("⚠ No witness testimonies available for this case")
         st.info("Officers must rely solely on victim statement")
+
     else:
-        col1,col2 = st.columns(2)
+
+        col1,col2=st.columns(2)
+
         if col1.button("Request Neighbor A"):
             time.sleep(2)
             st.session_state.audio1=True
+
         if col1.button("Request Friend"):
             time.sleep(2)
             st.session_state.audio2=True
+
         if col2.button("Request Neighbor B"):
             time.sleep(2)
             st.session_state.audio3=True
+
         if col2.button("Request Doctor"):
             time.sleep(2)
             st.session_state.audio4=True
 
         if st.session_state.audio1:
             st.audio(selected_case["neighborA"])
+
         if st.session_state.audio2:
             st.audio(selected_case["friend"])
+
         if st.session_state.audio3:
             st.audio(selected_case["neighborB"])
+
         if st.session_state.audio4:
             st.audio(selected_case["doctor"])
