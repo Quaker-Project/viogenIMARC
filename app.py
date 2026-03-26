@@ -360,3 +360,106 @@ if st.button("🚨 Generate Risk Assessment"):
     st.dataframe(df,use_container_width=True)
 
 # --- (TODO lo demás sigue igual, sin cambios) ---
+st.divider()
+st.header("📄 Risk Justification Exchange")
+
+group = st.selectbox("Select your group:", ["Group A","Group B"])
+
+# --- LINKS ---
+
+group_a_link = "https://drive.google.com/drive/folders/1DL3-WunHe6-x0DVDp7HyEliSHA7b9Csg?usp=sharing"
+group_b_link = "https://drive.google.com/drive/folders/1RON9R9DX7e0VK95QmNYLBp-lWrv9W0KB?usp=sharing"
+
+# --- SHOW LINKS ---
+
+if group == "Group A":
+
+    st.subheader("📤 Upload your report")
+    st.markdown(f"[Open Group A Folder]({group_a_link})")
+
+    st.subheader("📥 Review Group B reports")
+    st.markdown(f"[Open Group B Folder]({group_b_link})")
+
+else:
+
+    st.subheader("📤 Upload your report")
+    st.markdown(f"[Open Group B Folder]({group_b_link})")
+
+    st.subheader("📥 Review Group A reports")
+    st.markdown(f"[Open Group A Folder]({group_a_link})")
+
+# --- IMPORTS (pueden estar arriba, pero aquí también funciona) ---
+
+from docx import Document
+from docx.shared import Inches
+from io import BytesIO
+
+# --- PEER REVIEW TEXT ---
+
+st.subheader("🧠 Peer Review")
+
+peer_review = st.text_area("Your review")
+
+file_name = f"{group}_{victim}_REVIEW.docx"
+
+# --- GENERATE WORD ---
+
+if st.button("Generate Word Review"):
+
+    if peer_review.strip() == "":
+        st.warning("Please write your review first")
+
+    else:
+        doc = Document()
+
+        # --- LOGO SEGÚN UNIDAD ---
+        unit = location.strip().upper()
+
+        if unit == "CNP":
+            try:
+                doc.add_picture("assets/cnp_logo.png", width=Inches(1.5))
+            except:
+                pass
+            doc.add_heading('SPANISH NATIONAL POLICE', 1)
+
+        elif unit == "GC":
+            try:
+                doc.add_picture("assets/gc_logo.png", width=Inches(1.5))
+            except:
+                pass
+            doc.add_heading('GUARDIA CIVIL', 1)
+
+        else:
+            doc.add_heading('MINISTRY OF INTERIOR', 1)
+
+        # --- SUBHEADER ---
+        doc.add_paragraph('Risk Assessment Peer Review Unit')
+        doc.add_paragraph("\n")
+
+        # --- METADATA ---
+        doc.add_heading('Case Information', level=2)
+        doc.add_paragraph(f"Group: {group}")
+        doc.add_paragraph(f"Case ID: {victim}")
+        doc.add_paragraph(f"Officer: {officer}")
+        doc.add_paragraph(f"Unit: {location}")
+        doc.add_paragraph(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+
+        doc.add_paragraph("\n")
+
+        # --- CONTENT ---
+        doc.add_heading('Peer Review Assessment', level=2)
+        doc.add_paragraph(peer_review)
+
+        # --- SAVE ---
+        buffer = BytesIO()
+        doc.save(buffer)
+        buffer.seek(0)
+
+        st.download_button(
+            label="📥 Download Word Report",
+            data=buffer,
+            file_name=file_name,
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
+
+        st.success("Word file generated with institutional format")
