@@ -18,38 +18,60 @@ st.markdown("""
 st.title("UrbanLab — Social Disorganization Simulator")
 
 st.markdown("""
-1️⃣ Analyse neighbourhood  
-2️⃣ Design intervention  
-3️⃣ Evaluate outcomes  
-4️⃣ Exchange and assess reports  
+1️⃣ Analyse real neighbourhood  
+2️⃣ Build criminological diagnosis  
+3️⃣ Design intervention  
+4️⃣ Evaluate and exchange reports  
 """)
 
 st.divider()
 
 # -----------------------------
-# BARRIOS
+# BARRIOS REALES
 # -----------------------------
-barrios = {
-    "Exclusión severa": {
-        "desorganizacion":85,"cohesion":25,"pobreza":90,
-        "desc":"Alta marginalidad, economías informales y fuerte desorganización social."
-    },
-    "Centro degradado": {
-        "desorganizacion":70,"cohesion":35,"pobreza":65,
-        "desc":"Alta densidad, rotación poblacional y conflictos de convivencia."
-    },
-    "Barrio en transformación": {
-        "desorganizacion":60,"cohesion":40,"pobreza":60,
-        "desc":"Proceso de cambio urbano con tensiones sociales."
-    },
-    "Periferia obrera": {
-        "desorganizacion":55,"cohesion":50,"pobreza":55,
-        "desc":"Identidad comunitaria con desigualdades emergentes."
-    }
-}
+barrios_reales = [
+    "Polígono Sur (Sevilla)",
+    "El Raval (Barcelona)",
+    "El Cabanyal (Valencia)",
+    "Puente de Vallecas (Madrid)",
+    "Usera (Madrid)",
+    "Ciutat Meridiana (Barcelona)",
+    "La Mina (Sant Adrià del Besòs)"
+]
+
+if "barrio" not in st.session_state:
+    st.session_state.barrio = random.choice(barrios_reales)
+
+st.header("📍 Assigned neighbourhood")
+st.success(st.session_state.barrio)
+
+st.markdown("""
+🔎 Use real sources (statistics, press, academic work) to build your diagnosis.
+""")
 
 # -----------------------------
-# INTERPRETADOR AVANZADO
+# DIAGNÓSTICO
+# -----------------------------
+st.header("Step 1 — Criminological diagnosis")
+
+diagnostico = st.text_area("""
+Describe the neighbourhood using social disorganization theory:
+
+- Social cohesion  
+- Informal control  
+- Structural conditions  
+- Criminogenic factors  
+""", height=200)
+
+# -----------------------------
+# PLAN
+# -----------------------------
+st.header("Step 2 — Intervention plan")
+
+plan = st.text_area("Design your intervention", height=200)
+
+# -----------------------------
+# INTERPRETADOR
 # -----------------------------
 def interpretar_plan(plan):
 
@@ -92,63 +114,48 @@ def interpretar_plan(plan):
                 break
 
     tipo_final = "mixta" if len(tipos)>1 else list(tipos)[0] if tipos else "indefinida"
-
     score = len(contribuciones)*2
 
     return cambios, contribuciones, tipo_final, min(score,10)
 
 # -----------------------------
-# SIMULACIÓN
+# EJECUCIÓN
 # -----------------------------
-st.header("Step 1 — Select neighbourhood")
+if st.button("Run simulation"):
 
-barrio_sel = st.selectbox("Neighbourhood", list(barrios.keys()))
-st.info(barrios[barrio_sel]["desc"])
+    if len(diagnostico) < 50:
+        st.warning("Diagnosis too short")
+        st.stop()
 
-if st.button("Start simulation"):
+    if len(plan) < 50:
+        st.warning("Plan too short")
+        st.stop()
 
-    b = barrios[barrio_sel]
+    cambios, contribuciones, tipo, score = interpretar_plan(plan)
 
-    estado = {
-        "desorganizacion": b["desorganizacion"],
-        "cohesion": b["cohesion"],
+    base = {
+        "desorganizacion":70,
+        "cohesion":40,
         "control":30,
-        "pobreza": b["pobreza"],
+        "pobreza":60,
         "policia":40
     }
 
-    st.session_state.estado = estado
+    for k in cambios:
+        if k in base:
+            base[k]+=cambios[k]
 
-# -----------------------------
-# INTERVENCIÓN
-# -----------------------------
-if "estado" in st.session_state:
+    delito = (
+        base["desorganizacion"]*0.4 +
+        base["pobreza"]*0.3 -
+        base["cohesion"]*0.3 -
+        base["control"]*0.2
+    )
 
-    st.header("Step 2 — Intervention design")
-
-    plan = st.text_area("Describe your intervention")
-
-    if st.button("Run simulation"):
-
-        cambios, contribuciones, tipo, score = interpretar_plan(plan)
-
-        b = st.session_state.estado
-
-        for k in cambios:
-            if k in b:
-                b[k]+=cambios[k]
-
-        delincuencia = (
-            b["desorganizacion"]*0.4 +
-            b["pobreza"]*0.3 -
-            b["cohesion"]*0.3 -
-            b["control"]*0.2
-        )
-
-        st.session_state.resultado = delincuencia
-        st.session_state.contrib = contribuciones
-        st.session_state.tipo = tipo
-        st.session_state.score = score
+    st.session_state.resultado = delito
+    st.session_state.contrib = contribuciones
+    st.session_state.tipo = tipo
+    st.session_state.score = score
 
 # -----------------------------
 # RESULTADOS
@@ -157,14 +164,25 @@ if "resultado" in st.session_state:
 
     st.header("Step 3 — Results")
 
-    col1,col2,col3 = st.columns(3)
+    c1,c2,c3 = st.columns(3)
+    c1.metric("Crime level", round(st.session_state.resultado,2))
+    c2.metric("Strategy", st.session_state.tipo)
+    c3.metric("Score", st.session_state.score)
 
-    col1.metric("Crime level", round(st.session_state.resultado,2))
-    col2.metric("Strategy", st.session_state.tipo)
-    col3.metric("Theoretical score", st.session_state.score)
+    df = pd.DataFrame(st.session_state.contrib, columns=["Interventions"])
+    st.dataframe(df)
 
-    df = pd.DataFrame(st.session_state.contrib, columns=["Interventions detected"])
-    st.dataframe(df, use_container_width=True)
+    # Feedback diagnóstico
+    st.subheader("🧠 Diagnostic feedback")
+
+    if "cohesion" not in diagnostico.lower():
+        st.warning("Missing cohesion analysis")
+
+    if "control" not in diagnostico.lower():
+        st.warning("Missing informal control")
+
+    if "pobre" not in diagnostico.lower():
+        st.warning("Missing structural factors")
 
 # -----------------------------
 # INFORME WORD
@@ -173,26 +191,31 @@ if "resultado" in st.session_state:
 
     st.header("Step 4 — Generate report")
 
-    if st.button("Generate Word report"):
+    if st.button("Generate report"):
 
         doc = Document()
 
         doc.add_heading('URBAN POLICY REPORT', 1)
 
-        doc.add_paragraph(f"Neighbourhood: {barrio_sel}")
+        doc.add_heading('Neighbourhood',2)
+        doc.add_paragraph(st.session_state.barrio)
+
+        doc.add_heading('Diagnosis',2)
+        doc.add_paragraph(diagnostico)
+
+        doc.add_heading('Intervention',2)
+        doc.add_paragraph(plan)
+
+        doc.add_heading('Results',2)
         doc.add_paragraph(f"Crime level: {round(st.session_state.resultado,2)}")
         doc.add_paragraph(f"Strategy: {st.session_state.tipo}")
-
-        doc.add_heading('Interventions', level=2)
-        for c in st.session_state.contrib:
-            doc.add_paragraph(c)
 
         buffer = BytesIO()
         doc.save(buffer)
         buffer.seek(0)
 
         st.download_button(
-            "Download report",
+            "📄 Download report",
             buffer,
             file_name="urban_report.docx"
         )
@@ -203,7 +226,7 @@ if "resultado" in st.session_state:
 st.divider()
 st.header("📄 Report exchange & evaluation")
 
-grupo = st.selectbox("Select your group", ["Group A","Group B","Group C"])
+grupo = st.selectbox("Group", ["Group A","Group B","Group C"])
 
 links = {
     "Group A":{"upload":"LINK_A","review":"LINK_B"},
@@ -214,7 +237,7 @@ links = {
 st.subheader("Upload your report")
 st.markdown(f"[Open folder]({links[grupo]['upload']})")
 
-st.subheader("Review other reports")
+st.subheader("Review reports")
 st.markdown(f"[Open reports]({links[grupo]['review']})")
 
 # -----------------------------
@@ -226,7 +249,7 @@ c1,c2 = st.columns(2)
 
 with c1:
     coherencia = st.slider("Theoretical coherence",0,10,5)
-    analisis = st.slider("Quality of analysis",0,10,5)
+    analisis = st.slider("Quality of diagnosis",0,10,5)
 
 with c2:
     viabilidad = st.slider("Feasibility",0,10,5)
@@ -251,7 +274,7 @@ if st.button("Generate evaluation report"):
 
     doc.add_heading("Scores",2)
     doc.add_paragraph(f"Coherence: {coherencia}")
-    doc.add_paragraph(f"Analysis: {analisis}")
+    doc.add_paragraph(f"Diagnosis: {analisis}")
     doc.add_paragraph(f"Feasibility: {viabilidad}")
     doc.add_paragraph(f"Innovation: {innovacion}")
 
@@ -263,7 +286,7 @@ if st.button("Generate evaluation report"):
     buffer.seek(0)
 
     st.download_button(
-        "Download evaluation",
+        "📥 Download evaluation",
         buffer,
         file_name="evaluation.docx"
     )
