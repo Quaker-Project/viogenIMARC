@@ -17,58 +17,77 @@ st.markdown("""
 
 st.title("UrbanLab — Social Disorganization Simulator")
 
-st.markdown("""
-1️⃣ Analyse real neighbourhood  
-2️⃣ Build criminological diagnosis  
-3️⃣ Design intervention  
-4️⃣ Evaluate and exchange reports  
-""")
-
-st.divider()
+# -----------------------------
+# LISTA DE BARRIOS (GLOBAL)
+# -----------------------------
+if "barrios_disponibles" not in st.session_state:
+    st.session_state.barrios_disponibles = [
+        "Polígono Sur (Sevilla)",
+        "El Raval (Barcelona)",
+        "El Cabanyal (Valencia)",
+        "Puente de Vallecas (Madrid)",
+        "Usera (Madrid)",
+        "Ciutat Meridiana (Barcelona)",
+        "La Mina (Sant Adrià del Besòs)"
+    ]
 
 # -----------------------------
-# BARRIOS REALES
+# IDENTIFICACIÓN DE GRUPO
 # -----------------------------
-barrios_reales = [
-    "Polígono Sur (Sevilla)",
-    "El Raval (Barcelona)",
-    "El Cabanyal (Valencia)",
-    "Puente de Vallecas (Madrid)",
-    "Usera (Madrid)",
-    "Ciutat Meridiana (Barcelona)",
-    "La Mina (Sant Adrià del Besòs)"
-]
+st.header("👥 Group identification")
+
+grupo_input = st.text_input("Enter your group name")
+
+if "grupo" not in st.session_state:
+    st.session_state.grupo = None
 
 if "barrio" not in st.session_state:
-    st.session_state.barrio = random.choice(barrios_reales)
+    st.session_state.barrio = None
 
-st.header("📍 Assigned neighbourhood")
-st.success(st.session_state.barrio)
+# asignación única
+if grupo_input and st.session_state.grupo is None:
 
-st.markdown("""
-🔎 Use real sources (statistics, press, academic work) to build your diagnosis.
-""")
+    st.session_state.grupo = grupo_input
+
+    if len(st.session_state.barrios_disponibles) > 0:
+        barrio = random.choice(st.session_state.barrios_disponibles)
+        st.session_state.barrio = barrio
+        st.session_state.barrios_disponibles.remove(barrio)
+    else:
+        st.session_state.barrio = "No neighbourhoods left"
+
+# mostrar barrio
+if st.session_state.barrio:
+
+    st.header("📍 Assigned neighbourhood")
+    st.success(st.session_state.barrio)
+
+    st.warning("⚠️ This neighbourhood is fixed and cannot be changed")
 
 # -----------------------------
 # DIAGNÓSTICO
 # -----------------------------
-st.header("Step 1 — Criminological diagnosis")
+if st.session_state.barrio:
 
-diagnostico = st.text_area("""
-Describe the neighbourhood using social disorganization theory:
+    st.header("Step 1 — Criminological diagnosis")
 
-- Social cohesion  
-- Informal control  
-- Structural conditions  
-- Criminogenic factors  
-""", height=200)
+    diagnostico = st.text_area("""
+    Analyse the neighbourhood:
+
+    - Social cohesion  
+    - Informal control  
+    - Structural conditions  
+    - Criminogenic dynamics  
+    """, height=200)
 
 # -----------------------------
 # PLAN
 # -----------------------------
-st.header("Step 2 — Intervention plan")
+if st.session_state.barrio:
 
-plan = st.text_area("Design your intervention", height=200)
+    st.header("Step 2 — Intervention plan")
+
+    plan = st.text_area("Design your intervention", height=200)
 
 # -----------------------------
 # INTERPRETADOR
@@ -121,41 +140,43 @@ def interpretar_plan(plan):
 # -----------------------------
 # EJECUCIÓN
 # -----------------------------
-if st.button("Run simulation"):
+if st.session_state.barrio:
 
-    if len(diagnostico) < 50:
-        st.warning("Diagnosis too short")
-        st.stop()
+    if st.button("Run simulation"):
 
-    if len(plan) < 50:
-        st.warning("Plan too short")
-        st.stop()
+        if len(diagnostico) < 50:
+            st.warning("Diagnosis too short")
+            st.stop()
 
-    cambios, contribuciones, tipo, score = interpretar_plan(plan)
+        if len(plan) < 50:
+            st.warning("Plan too short")
+            st.stop()
 
-    base = {
-        "desorganizacion":70,
-        "cohesion":40,
-        "control":30,
-        "pobreza":60,
-        "policia":40
-    }
+        cambios, contribuciones, tipo, score = interpretar_plan(plan)
 
-    for k in cambios:
-        if k in base:
-            base[k]+=cambios[k]
+        base = {
+            "desorganizacion":70,
+            "cohesion":40,
+            "control":30,
+            "pobreza":60,
+            "policia":40
+        }
 
-    delito = (
-        base["desorganizacion"]*0.4 +
-        base["pobreza"]*0.3 -
-        base["cohesion"]*0.3 -
-        base["control"]*0.2
-    )
+        for k in cambios:
+            if k in base:
+                base[k]+=cambios[k]
 
-    st.session_state.resultado = delito
-    st.session_state.contrib = contribuciones
-    st.session_state.tipo = tipo
-    st.session_state.score = score
+        delito = (
+            base["desorganizacion"]*0.4 +
+            base["pobreza"]*0.3 -
+            base["cohesion"]*0.3 -
+            base["control"]*0.2
+        )
+
+        st.session_state.resultado = delito
+        st.session_state.contrib = contribuciones
+        st.session_state.tipo = tipo
+        st.session_state.score = score
 
 # -----------------------------
 # RESULTADOS
@@ -172,7 +193,6 @@ if "resultado" in st.session_state:
     df = pd.DataFrame(st.session_state.contrib, columns=["Interventions"])
     st.dataframe(df)
 
-    # Feedback diagnóstico
     st.subheader("🧠 Diagnostic feedback")
 
     if "cohesion" not in diagnostico.lower():
@@ -197,8 +217,8 @@ if "resultado" in st.session_state:
 
         doc.add_heading('URBAN POLICY REPORT', 1)
 
-        doc.add_heading('Neighbourhood',2)
-        doc.add_paragraph(st.session_state.barrio)
+        doc.add_paragraph(f"Group: {st.session_state.grupo}")
+        doc.add_paragraph(f"Neighbourhood: {st.session_state.barrio}")
 
         doc.add_heading('Diagnosis',2)
         doc.add_paragraph(diagnostico)
