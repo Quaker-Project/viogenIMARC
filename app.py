@@ -587,4 +587,3 @@ else:
     )
 
     st.success("Word file generated with institutional format")
-```
