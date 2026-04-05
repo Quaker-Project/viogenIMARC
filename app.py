@@ -586,4 +586,4 @@ else:
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     )
 
-    st.success("Word file generated with institutional format")
+    st.success("Word file generated with institutional format") ¿Me devuelves este código entero con los errores de sintaxis corregido?
